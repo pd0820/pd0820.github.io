@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="函数与指针 1、函数1.1 为什么需要函数 避免了重复性操作  有利于程序的模块化（一个main函数的功能通过调用的几个函数实现，这几个函数又通过调用一些函数实现）   1.2 什么叫函数逻辑上：能够完成特定功能的独立的代码块 物理上： 能够接收数据（也可以不接收） 能够对接收的数据进行处理（也可以不处理） 能够将数据处理的结果返回（也可以不返回） 总结：函数是个用于解决大量类似问题的工具。 1.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="article title">
+<meta property="og:url" content="http://example.com/2023/01/14/article-title/index.html">
+<meta property="og:site_name" content="仓中鼠的博客">
+<meta property="og:description" content="函数与指针 1、函数1.1 为什么需要函数 避免了重复性操作  有利于程序的模块化（一个main函数的功能通过调用的几个函数实现，这几个函数又通过调用一些函数实现）   1.2 什么叫函数逻辑上：能够完成特定功能的独立的代码块 物理上： 能够接收数据（也可以不接收） 能够对接收的数据进行处理（也可以不处理） 能够将数据处理的结果返回（也可以不返回） 总结：函数是个用于解决大量类似问题的工具。 1.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-14T05:19:58.000Z">
+<meta property="article:modified_time" content="2023-01-14T05:21:10.865Z">
+<meta property="article:author" content="仓中鼠">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2023/01/14/article-title/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>article title | 仓中鼠的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">仓中鼠的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录美好生活</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/14/article-title/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="仓中鼠">
+      <meta itemprop="description" content="仓中鼠，食积粟，居大庑之下，不见人犬之忧。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="仓中鼠的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          article title
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-01-14 13:19:58 / 修改时间：13:21:10" itemprop="dateCreated datePublished" datetime="2023-01-14T13:19:58+08:00">2023-01-14</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span></span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>NaN:aN</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="函数与指针"><a href="#函数与指针" class="headerlink" title="函数与指针"></a>函数与指针</h4><hr>
+<h5 id="1、函数"><a href="#1、函数" class="headerlink" title="1、函数"></a>1、函数</h5><h6 id="1-1-为什么需要函数"><a href="#1-1-为什么需要函数" class="headerlink" title="1.1 为什么需要函数"></a>1.1 为什么需要函数</h6><ul>
+<li><p>避免了重复性操作</p>
+</li>
+<li><p>有利于程序的模块化（一个main函数的功能通过调用的几个函数实现，这几个函数又通过调用一些函数实现）</p>
+</li>
+</ul>
+<h6 id="1-2-什么叫函数"><a href="#1-2-什么叫函数" class="headerlink" title="1.2 什么叫函数"></a>1.2 什么叫函数</h6><p>逻辑上：能够完成特定功能的独立的代码块</p>
+<p>物理上：</p>
+<p>能够接收数据（也可以不接收）</p>
+<p>能够对接收的数据进行处理（也可以不处理）</p>
+<p>能够将数据处理的结果返回（也可以不返回）</p>
+<p>总结：函数是个用于解决大量类似问题的工具。</p>
+<h6 id="1-3-如何定义函数"><a href="#1-3-如何定义函数" class="headerlink" title="1.3 如何定义函数"></a>1.3 如何定义函数</h6><p>格式：</p>
+<pre><code>函数的返回值 函数的名字（函数的形参列表）
+&#123;
+    函数的执行体
+&#125;
+函数定义的本质是详细描述函数实现某个特定功能的具体方法
+</code></pre>
+<p><mark>已知的语言全是用压栈的方式进行函数调用</mark></p>
+<pre><code>//main调用f，就要为f分配空间，怎么分配空间？就是在一个栈里面为它分配。那f调用期间用调用g，是不是要把g的空间也压栈呀！所以g里面的形参包括里面的局部变量统统都是以栈的方式来分配的。所以为什么它不能跨函数使用？为什么g函数终止之后，g里面的空间不能被f使用？因为你这函数一终止，这个东西就出栈了（就是把栈中为g分配的空间抛出去）。
+</code></pre>
+<h6 id="专题：return表达式"><a href="#专题：return表达式" class="headerlink" title="专题：return表达式"></a>专题：return表达式</h6><p><mark>函数返回值的类型也称为函数的类型</mark>（当函数返回值的数据类型与函数名前面数据类型冲突时，以函数名前面的数据类型为准）</p>
+<pre><code>eg：
+int f()
+&#123;
+    return 10.5;
+&#125;
+最后的返回值为10
+</code></pre>
+<p>return表达式的作用</p>
+<p><mark>终止被调函数，向主调函数返回表达式的值</mark></p>
+<p>注意:主函数是程序的入口，也是程序的出口（一个程序只能有一个主函数）</p>
+<p><mark>函数内部定义的变量只在本函数中使用</mark></p>
+<h6 id="1-4-函数的声明"><a href="#1-4-函数的声明" class="headerlink" title="1.4 函数的声明"></a>1.4 函数的声明</h6><pre><code>eg：
+void f(void);
+</code></pre>
+<p><mark>作用：告诉编译器<code>f</code>是个函数名</mark></p>
+<p>为什么要函数的声明？</p>
+<p><mark>避免调用函数的语句放在了定义函数的语句的前面</mark></p>
+<p><mark>对库函数的声明已通过<code> # include &lt;库函数所在文件的名字.h&gt;</code>声明了</mark></p>
+<h6 id="专题：递归"><a href="#专题：递归" class="headerlink" title="专题：递归"></a>专题：递归</h6><ol>
+<li><p>函数自己调用自己</p>
+</li>
+<li><p>只递不归会导致程序崩溃</p>
+</li>
+<li><p>要在适当的时候终止递归</p>
+</li>
+</ol>
+<h6 id="专题：变量的作用域和存储方式"><a href="#专题：变量的作用域和存储方式" class="headerlink" title="专题：变量的作用域和存储方式"></a>专题：变量的作用域和存储方式</h6><p><strong>按作用域分：</strong></p>
+<p>全局变量</p>
+<p><mark>在所有函数外部定义的变量，就叫全局变量</mark></p>
+<p>全局变量使用范围：</p>
+<p><mark>从定义位置开始到整个程序结束</mark></p>
+<p>局部变量</p>
+<p><mark>在一个函数内部定义的或者说函数的形参，都统称为局部变量</mark></p>
+<p>局部变量使用范围：</p>
+<p><mark>只能在本函数内部使用</mark></p>
+<pre><code>eg：
+void f(int i)
+&#123;
+    int j = 100;
+&#125;
+i（形参）和j（内部定义的变量）都属于局部变量
+注意：一旦函数运行完毕，为这个函数分配的所有静态空间都会释放，（避免重复调用函数造成内存占用）
+</code></pre>
+<p>当全局变量与局部变量命名冲突时：</p>
+<p><u>在一个函数内部，如果定义的局部变量的名字与全局变量的名字一样时，局部变量会屏蔽到全局变量（C语言设计时这样规定的）</u></p>
+<p><strong>按变量的存储方式分：</strong></p>
+<p>静态变量</p>
+<p>自动变量</p>
+<p>寄存器变量</p>
+<h5 id="2、指针"><a href="#2、指针" class="headerlink" title="2、指针"></a>2、指针</h5><h6 id="2-1-理解指针-重要"><a href="#2-1-理解指针-重要" class="headerlink" title="2.1 理解指针(重要)"></a>2.1 理解指针(重要)</h6><pre><code>int * p;
+int i = 3;
+p = i;   //错误，因为类型不一致，p只能存放int类型变量的地址，不能存放int类型的变量
+p = 55；  //错误，原因同上
+p = &amp;i;   //正确
+</code></pre>
+<p>注意：<mark>指针就是地址，地址就是指针。<code>i</code>的指针也可以叫<code>i</code>的地址</mark>（所以指针是一个值，指针变量是一个变量，但是请注意，那些牛马在叙述时会把指针变量简称为指针，实际上，它们的含义并不一样）</p>
+<p>地址就是内存单元的编号</p>
+<p>指针变量是存放地址的变量</p>
+<p>指针的本质就是一个操作受限的非负整数（指针只能进行减法运算）</p>
+<pre><code>int main(void)
+&#123;
+    int* p;  //p是变量的名字，int* 表示p变量存放的是int类型变量的地址（相当于p是变量的名字，p变量的数据类型是 int* 类型， ）
+             //所谓 int* 类型：就是存放 int型变量的 地址的类型
+    int i = 3；
+    int j；    ·
+
+    p = &amp;i;
+    /* 
+        p保存了i的地址，因此p指向i（因为p里面有i的地址，通过p可以找到i，我们有一个专有词叫‘指向’）
+        p不是i，i也不是p，更准确的说，修改p的值不影响i的值，修改i的值也不会影响p
+        p是一个特殊的变量（可以存放整数类型的变量的地址），但它仍然是个变量
+        如果一个指针变量指向了某个普通变量，则 *指针变量 就完全等同于普通变量
+
+        例子：
+            如果p是个指针变量，并且p存放了普通变量i的地址
+            则p指向了普通变量i
+            *p 就完全等同于 i   （*表示取地址的逆运算）
+            或者说： 在所有出现*p的地方都可以替换成i
+                    在所有出现i的地方都可以替换成*p
+            *p 就是以p的内容为地址的变量
+     */
+    j = *p;
+    printf(&quot;i = %d, j = %d, *p = %d\n&quot;, i, j, *p);
+
+    return 0;
+&#125;
+输出值为：
+i = 3, j = 3, *p = 3
+</code></pre>
+<h6 id="2-2-指针的重要性"><a href="#2-2-指针的重要性" class="headerlink" title="2.2 指针的重要性"></a>2.2 指针的重要性</h6><ul>
+<li><p>能够表示一些复杂的数据结构</p>
+</li>
+<li><p>能够快速的传递数据，减少了内存的耗用</p>
+</li>
+<li><p>能够使函数返回一个以上的值(不然只能用return返回一个值)</p>
+</li>
+<li><p>能够直接访问硬件</p>
+</li>
+<li><p>能够方便的处理字符串</p>
+</li>
+<li><p>是理解面向对象语言中引用的基础</p>
+</li>
+</ul>
+<p>总结：指针是C语言的灵魂</p>
+<h6 id="专题：-的含义"><a href="#专题：-的含义" class="headerlink" title="专题：*的含义"></a>专题：*的含义</h6><ul>
+<li><p>乘法</p>
+</li>
+<li><p>定义指针变量</p>
+<p>  int* p;<br>  定义了一个名字叫p的变量，int*表示p只能存放int类型变量的地址</p>
+</li>
+<li><p>指针运算符</p>
+<p> 如果p是一个已经定义好的指针变量，则<mark>*p表示以p的内容为地址的变量</mark></p>
+<p>  如何通过被调函数修改主调函数普通变量的值：<br>  1.实参必须为该普通变量的地址<br>  2.形参必须为指针变量<br>  3.在被调函数中通过<br>      *形参名<br>  的方式就可以修改主调函数相关变量的值</p>
+</li>
+</ul>
+<h6 id="2-3-指针和数组"><a href="#2-3-指针和数组" class="headerlink" title="2.3 指针和数组"></a>2.3 指针和数组</h6><p><mark>一维数组名是个指针常量，它存放的是一维数组第一个元素的地址</mark></p>
+<p>（因为是指针<mark>常量</mark>，所以数组名的值不可更改）</p>
+<p>如果p是个指针变量，则</p>
+<p><mark><code>p[i]</code>永远等价于<code>*(p+i)</code></mark></p>
+<pre><code>eg:
+printf(&quot;%d\n&quot;,*c);  //输出第一个元素的值
+printf(&quot;%d\n&quot;, *(c+3));  //输出第4个元素的值
+//c+3完成了向后移动三个地址单元
+</code></pre>
+<p>补充：数组元素<code>a[i]</code>就是当作<code>*(a+i)</code>去处理的，先通过数组名<code>a</code>找到数组的首地址，然后首地址<code>a+i</code>得到<code>a[i]</code>的地址</p>
+<p>函数要处理一个一元数组，需要两个参数，即</p>
+<p>数组的第一个元素的地址和数组的长度</p>
+<h6 id="2-4-指针变量的运算"><a href="#2-4-指针变量的运算" class="headerlink" title="2.4 指针变量的运算"></a>2.4 指针变量的运算</h6><p>指针变量不能相加，不能相乘，不能相除</p>
+<p>如果两个指针变量指向的是同一块连续空间中的不同存储单元，则这两个指针变量才可以相减</p>
+<h6 id="专题：一个指针变量到底占几个字节"><a href="#专题：一个指针变量到底占几个字节" class="headerlink" title="专题：一个指针变量到底占几个字节"></a>专题：一个指针变量到底占几个字节</h6><pre><code>预备知识：
+sizeof(数据类型)
+功能：返回值就是该数据类型所占的字节数
+eg:
+sizeof(int) = 4
+sizeof(char) = 1
+sizeof(double) = 8
+
+sizeof(变量)
+功能：返回值就是该变量所占的字节数
+</code></pre>
+<p>假设p指向char类型变量（1个字节）</p>
+<p>假设q指向int类型变量（4个字节）</p>
+<p>假设r指向double类型变量（8个字节）</p>
+<p><code>p q r </code>本身所占字节数是否一样?</p>
+<pre><code>char ch = &#39;A&#39;;
+int i = 99;
+double x = 66.6;
+char* p = &amp;ch;
+int* q = &amp;i;
+double* r = &amp;x;
+printf(&quot;%d %d %d\n&quot;, sizeof(p), sizeof(q), sizeof(r));
+//在VScode的输出结果为：
+---------------------
+8 8 8
+---------------------
+即 p q r 本身所占字节数是一样的。
+根据郝斌P139的讲解，得出结论：
+在p,q,r中，它只保存ch,i,x的第一个字节的地址。
+
+问：但既然*q=i，q只知道i第一个字节地址的话，但是i如果占好几个字节呢,它如何知道i占几个字节呢？
+答：这在int* q = &amp;i;中给出了，就是定义了是int*类型的指针变量
+
+问：那既然p,q,r只保存了ch,i,x的第一个字节地址，为什么它们又都占8个字节(64GB)呢？
+答：虽然只保存了第一个字节地址，但这个地址是编号啊，这个编号本身就要8个字节来保存（就像造了一亿个房子，这个房子的容量虽然只有这么大，但是房子很多，它的编号就会很大）可能这个VScode认为的那个计算机是64根地址总线，刚好控制2^64个内存单元，即64GB
+</code></pre>
+<p><mark>注意：一个变量的地址使用该变量首个内存单元的地址来表示</mark>（因为一个内存单元就是一个字节，一个变量的地址使用该变量首字节的地址来表示）</p>
+<h6 id="专题：动态内存分配-重要"><a href="#专题：动态内存分配-重要" class="headerlink" title="专题：动态内存分配(重要)"></a>专题：动态内存分配(重要)</h6><p><strong>传统数组的缺点：</strong></p>
+<p>1.数组长度必须事先指定，且只能是常整数，不能是变量</p>
+<pre><code>eg:
+int a[5];  //OK
+int len = 5;int a[len]; //error
+</code></pre>
+<p>2.传统形式定义的数组，该数组的内存程序员无法手动释放</p>
+<p>(在一个函数运行期间，系统为该函数中数组所分配的空间会一直存在，直到该函数运行完毕时，数组的空间才会释放)</p>
+<p>3.数组的长度一旦定义，其长度就不能再更改</p>
+<p>(数组的长度不能在函数的运行的过程中动态的扩充或缩小)</p>
+<p>4.A函数定义的数组，在A函数运行期间可以被其它函数使用；但A函数运行完毕之后，A函数中的数组将无法再被其它函数使用（为什么能使用？因为用到数组的函数的形参都是地址啊）</p>
+<pre><code>void g(int* pArr, int len)
+&#123;
+    pArr[2] = 88;
+&#125;
+
+void f(void)
+&#123;
+    int a[5] = &#123;1,2,3,4,5&#125;;  //20个字节的存储空间程序员无法手动编程释放，它只能在本函数运行完毕时由系统自动释放
+    g(a, 5);
+    printf(&quot;%d\n&quot;, a[2]);
+&#125;
+
+int main(void)
+&#123;
+    f();
+    return 0;
+&#125;
+</code></pre>
+<h6 id="为什么需要动态分配内存："><a href="#为什么需要动态分配内存：" class="headerlink" title="为什么需要动态分配内存："></a>为什么需要动态分配内存：</h6><p>动态数组很好的解决了传统数组的四个缺陷(传统数组也叫静态数组)</p>
+<p><strong>动态内存分配举例_动态数组的构造</strong></p>
+<pre><code>int i = 5;  //分配了4个字节 静态分配
+int* p = (int *)malloc(4);  //4表示分配4个字节，malloc函数返回第一个字节地址，是个地址，
+                            //所以要用(int *)强制类型转换把它定义为int* 类型的地址变量
+/* 
+    1.要使用malloc函数，必须添加malloc.h这个头文件
+    2.malloc函数只有一个形参，并且形参是整型
+    3.4表示请求系统为本程序分配4个字节
+    4.malloc函数只能返回第一个字节的地址
+    5.12行分配了12个字节，p变量占8个字节，p指向的内存占4个字节
+    6.p本身所占的内存是静态分配的，p所指向的内存是动态分配的
+*/
+*p = 5;  //*p代表的就是一个int变量，只不过*p这个类型变量的内存分配方式和11行的i变量的分配方式不同
+free(p);  //free(p)表示把p指向的内存释放掉,p本身的内存是静态的，不能由程序员手动释放，只能在p变量所在的函数运行终止时由系统自动释放
+</code></pre>
+<p><strong>静态内存和动态内存的比较</strong></p>
+<ul>
+<li>静态内存是由系统自动分配的，由系统自动释放</li>
+</ul>
+<p>(静态内存是在栈分配的)</p>
+<ul>
+<li>动态内存是程序员手动分配的，手动释放</li>
+</ul>
+<p>(动态内存是在堆分配的)</p>
+<p><strong>多级指针</strong></p>
+<pre><code>int i = 10;
+int* p = &amp;i;
+int** q = &amp;p;
+int*** r = &amp;q;
+// r = &amp;p;  //error 因为r是 int*** 类型，r只能存放 int** 类型变量的地址
+//*是指针运算符，***r就是连续用*算三次，最后得到结果i = ***r = 10
+printf(&quot;i = %d\n&quot;, ***r);
+在VScode的输出结果是：
+------------------
+i = 10
+------------------
+</code></pre>
+<p><strong>跨函数使用内存的问题(重要)</strong></p>
+<pre><code>eg：(静态)
+void f(int** q)
+&#123;
+    int i = 5;
+    //*q等价于p
+    // *q = i;  //error 因为*q = i;等价于p = i;int类型赋值给int*类型，这样写是错误的
+    *q = &amp;i;
+&#125;
+
+int main(void)
+&#123;
+    int* p;
+
+    f(&amp;p);
+    printf(&quot;%d\n&quot;, *p);  //16行  本语句语法没有问题，但逻辑上有问题(因为f函数的i空间已经释放了)
+
+    return 0;
+&#125;
+
+eg:(动态)
+void f(int** q)
+&#123;
+    *q = (int*)malloc(sizeof(int));  //并没有规定int类型就必须要占4个字节，不同机器是不一样的
+                                     //C语言只规定了短整型不能大于整型，整型不能大于长整型
+                                     //所以用sizeof()可增加程序的可移植性
+    // q = 5;  //error
+    // *q = 5;  //p = 5;
+    **q = 5;  //*p = 5;
+&#125;
+int main(void)
+&#123;
+    int* p;
+
+    f(&amp;p);
+    printf(&quot;%d\n&quot;, *p);
+
+    return 0;
+&#125;
+</code></pre>
+<h5 id="3、结构体"><a href="#3、结构体" class="headerlink" title="3、结构体"></a>3、结构体</h5><p><em>为什么需要结构体？</em></p>
+<p>为了表示一些复杂的事物，而普通的基本数据类型无法满足实际需求</p>
+<p><em>什么叫结构体？</em></p>
+<p>把一些基本数据类型组合在一起形成一个复合的新的数据类型，这个叫做结构体</p>
+<h6 id="3-1-如何定义结构体？"><a href="#3-1-如何定义结构体？" class="headerlink" title="3.1 如何定义结构体？"></a>3.1 如何定义结构体？</h6><pre><code>3种方式，推荐使用第一种：
+//第一种方式
+struct Student1  //相当于造出了一个新的数据类型
+&#123;
+    int age;
+    float score;
+    char sex;
+&#125;;
+
+//第二种方式
+struct Student2
+&#123;
+    int age;
+    float score;
+    char sex;
+&#125; st2;
+
+//第三种方式
+struct
+&#123;
+    int age;
+    float score;
+    char sex;
+&#125; st3;
+</code></pre>
+<p><em>怎样使用结构体变量？</em></p>
+<p><em>赋值和初始化</em></p>
+<p>定义的同时可以整体赋初值</p>
+<p>如果定义完之后，则只能单个的赋初值</p>
+<h6 id="3-2-如何取出结构体变量中的每一个成员"><a href="#3-2-如何取出结构体变量中的每一个成员" class="headerlink" title="3.2 如何取出结构体变量中的每一个成员"></a>3.2 如何取出结构体变量中的每一个成员</h6><p>1.结构体变量名.成员名</p>
+<p>2.指针变量名-&gt;成员名(第二种更加常用)</p>
+<pre><code>    struct student st = &#123;80, 66.6, &#39;F&#39;&#125;;  
+    //初始化，定义的同时赋初值
+    struct student* pst = &amp;st;
+
+    st.age = 10;  //第一种方式
+    pst-&gt;age = 88;  //第二种方式
+
+pst-&gt;age在计算机内部会被转化成(*pst).age(这就是 -&gt; 的2含义，这是一种硬性规定)
+pst-&gt;age的含义：
+pst所指向的那个结构体变量中的age这个成员
+</code></pre>
+<h6 id="3-3-结构体变量的运算"><a href="#3-3-结构体变量的运算" class="headerlink" title="3.3 结构体变量的运算"></a>3.3 结构体变量的运算</h6><p>结构体变量不能相加，不能相减，也不能相互乘除，但结构体变量可以相互赋值</p>
+<pre><code>struct Student
+&#123;
+    int age;
+    char sex;
+    char name[100];
+&#125;;  //分号不能省
+struct Student st1,st2;
+st1+st2 st1*st2 st1/st2 都是错误的
+st1 = st2 或者 st2 = st1 都是正确的
+</code></pre>
+<h6 id="3-4-结构体变量和结构体变量指针作为函数参数传递的问题"><a href="#3-4-结构体变量和结构体变量指针作为函数参数传递的问题" class="headerlink" title="3.4 结构体变量和结构体变量指针作为函数参数传递的问题"></a>3.4 结构体变量和结构体变量指针作为函数参数传递的问题</h6><pre><code>void OutputStudent(struct Student ss)
+&#123;
+    printf(&quot;%d %c %s\n&quot;,ss.age, ss.sex, ss.name);
+&#125;
+void InputStudent(struct Student * pstu)
+&#123;
+    pstu-&gt;age = 10;
+    strcpy(pstu-&gt;name, &quot;张三&quot;);
+    pstu-&gt;sex = &#39;F&#39;;
+&#125;
+struct Student st;
+InputStudent(&amp;st);  //对结构体变量输入,必须发送st的地址
+OutputStudent(st);  //对结构体变量输出,可以发送st的地址，也可以发送st的内容
+
+//推荐使用结构体指针变量作为函数参数来传递
+</code></pre>
+<h6 id="专题：枚举"><a href="#专题：枚举" class="headerlink" title="专题：枚举"></a>专题：枚举</h6><p>什么是枚举</p>
+<p>把一个事物所有可能的取值一一列举出来</p>
+<p>怎么使用枚举</p>
+<pre><code>//只定义了一个数据类型，并没有定义变量，该数据类型的名字是enum WeekDay
+enum WeekDay
+&#123;
+    Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+&#125;;
+
+int main(void)
+&#123;
+    enum WeekDay day = Wednesday;
+    printf(&quot;%d\n&quot;, day);  //输出结果是2,在计算机内部认为Wednesday是2
+
+    return 0;
+&#125;
+</code></pre>
+<p>枚举的优缺点</p>
+<p>代码更安全</p>
+<p>书写麻烦</p>
+<h6 id="专题：链表"><a href="#专题：链表" class="headerlink" title="专题：链表"></a>专题：链表</h6><pre><code>算法
+通俗定义：解题的方法和步骤
+狭义定义：对存储数据的操作
+对不同的数据结构，要完成某一个功能所执行的操作是不一样的
+比如：
+要输出数组中所有元素的操作 和
+要输出链表中所有元素的操作肯定是不一样的
+这说明：
+    算法是依附于存储结构的
+    不同的存储结构所执行的算法是不一样的
+广义定义：广义的算法也叫泛型
+无论数据是如何存储的，对给数据的操作都是一样的
+</code></pre>
+<p>我们至少可以通过两种结构来存储数据</p>
+<pre><code>*数组*
+优点：存取速度快
+缺点：
+1.需要一个连续的很大的内存
+2.插入和删除元素的效率很低
+
+专业术语：
+头节点:
+1.头节点的数据类型和首节点的数据类型是一模一样的
+2.头节点是首节点前面的那个节点
+3.头节点并不存放有效数据
+4.设置头节点的目的是为了方便对链表的操作
+头指针:
+存放头节点的地址的指针变量
+首节点:
+存放第一个有效数据的节点
+尾节点:
+存放最后一个有效数据的节点
+
+*链表*
+优点：
+1.插入删除元素效率高
+2.不需要一个连续的很大的内容
+缺点：查找某个位置的元素效率低
+</code></pre>
+<h6 id="专题：位运算符"><a href="#专题：位运算符" class="headerlink" title="专题：位运算符"></a>专题：位运算符</h6><p><code>&amp;</code>:按位与</p>
+<p><code>|</code>:按位或</p>
+<p><code>~</code>:按位取反</p>
+<p><code>^</code>:按位异或</p>
+<p><code>&lt;&lt;</code>:按位左移</p>
+<p><code>&gt;&gt;</code>:按位右移</p>
+<p><code>i&lt;&lt;1</code> 表示把i的所有二进制位左移一位</p>
+<p><strong>左移n为相当于乘以2的n次方</strong></p>
+<p><code>i&gt;&gt;3</code>表示把i的所有二进制位右移3位，左边一般是补0，当然也可能补1</p>
+<p><strong>右移相当于除以2的n次方，前提是数据不能够丢失</strong></p>
+<p><em>通过位运算符我们可以对数据的操作精确到每一位</em></p>
+<h6 id="专题：NULL"><a href="#专题：NULL" class="headerlink" title="专题：NULL"></a>专题：NULL</h6><p>二进制全部为零的含义 —00000000000000000000的含义</p>
+<p>1.数值零</p>
+<p>2.字符串结束标记符 ‘\0’</p>
+<p>3.空指针NULL</p>
+<p>NULL表示的是零，而这个零不代表数字零，而表示的是内存单元的编号零</p>
+<p>计算机规定了，以零为编号的存储单元的内容不可读，不可写</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>仓中鼠
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2023/01/14/article-title/" title="article title">http://example.com/2023/01/14/article-title/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+      
+      <div>
+        
+          
+        
+      </div>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/01/14/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E4%B8%8E%E6%8C%87%E9%92%88"><span class="nav-number">1.</span> <span class="nav-text">函数与指针</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%E3%80%81%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text">1、函数</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 为什么需要函数</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-2-%E4%BB%80%E4%B9%88%E5%8F%AB%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 什么叫函数</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-3-%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.3 如何定义函数</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9Areturn%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">1.1.4.</span> <span class="nav-text">专题：return表达式</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-4-%E5%87%BD%E6%95%B0%E7%9A%84%E5%A3%B0%E6%98%8E"><span class="nav-number">1.1.5.</span> <span class="nav-text">1.4 函数的声明</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9A%E9%80%92%E5%BD%92"><span class="nav-number">1.1.6.</span> <span class="nav-text">专题：递归</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9A%E5%8F%98%E9%87%8F%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%92%8C%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.7.</span> <span class="nav-text">专题：变量的作用域和存储方式</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%E3%80%81%E6%8C%87%E9%92%88"><span class="nav-number">1.2.</span> <span class="nav-text">2、指针</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-%E7%90%86%E8%A7%A3%E6%8C%87%E9%92%88-%E9%87%8D%E8%A6%81"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 理解指针(重要)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-2-%E6%8C%87%E9%92%88%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 指针的重要性</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9A-%E7%9A%84%E5%90%AB%E4%B9%89"><span class="nav-number">1.2.3.</span> <span class="nav-text">专题：*的含义</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-3-%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E7%BB%84"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.3 指针和数组</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-4-%E6%8C%87%E9%92%88%E5%8F%98%E9%87%8F%E7%9A%84%E8%BF%90%E7%AE%97"><span class="nav-number">1.2.5.</span> <span class="nav-text">2.4 指针变量的运算</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9A%E4%B8%80%E4%B8%AA%E6%8C%87%E9%92%88%E5%8F%98%E9%87%8F%E5%88%B0%E5%BA%95%E5%8D%A0%E5%87%A0%E4%B8%AA%E5%AD%97%E8%8A%82"><span class="nav-number">1.2.6.</span> <span class="nav-text">专题：一个指针变量到底占几个字节</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9A%E5%8A%A8%E6%80%81%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D-%E9%87%8D%E8%A6%81"><span class="nav-number">1.2.7.</span> <span class="nav-text">专题：动态内存分配(重要)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%8A%A8%E6%80%81%E5%88%86%E9%85%8D%E5%86%85%E5%AD%98%EF%BC%9A"><span class="nav-number">1.2.8.</span> <span class="nav-text">为什么需要动态分配内存：</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3%E3%80%81%E7%BB%93%E6%9E%84%E4%BD%93"><span class="nav-number">1.3.</span> <span class="nav-text">3、结构体</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#3-1-%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E7%BB%93%E6%9E%84%E4%BD%93%EF%BC%9F"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 如何定义结构体？</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-%E5%A6%82%E4%BD%95%E5%8F%96%E5%87%BA%E7%BB%93%E6%9E%84%E4%BD%93%E5%8F%98%E9%87%8F%E4%B8%AD%E7%9A%84%E6%AF%8F%E4%B8%80%E4%B8%AA%E6%88%90%E5%91%98"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 如何取出结构体变量中的每一个成员</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-3-%E7%BB%93%E6%9E%84%E4%BD%93%E5%8F%98%E9%87%8F%E7%9A%84%E8%BF%90%E7%AE%97"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 结构体变量的运算</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-4-%E7%BB%93%E6%9E%84%E4%BD%93%E5%8F%98%E9%87%8F%E5%92%8C%E7%BB%93%E6%9E%84%E4%BD%93%E5%8F%98%E9%87%8F%E6%8C%87%E9%92%88%E4%BD%9C%E4%B8%BA%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.4.</span> <span class="nav-text">3.4 结构体变量和结构体变量指针作为函数参数传递的问题</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9A%E6%9E%9A%E4%B8%BE"><span class="nav-number">1.3.5.</span> <span class="nav-text">专题：枚举</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9A%E9%93%BE%E8%A1%A8"><span class="nav-number">1.3.6.</span> <span class="nav-text">专题：链表</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9A%E4%BD%8D%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-number">1.3.7.</span> <span class="nav-text">专题：位运算符</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9ANULL"><span class="nav-number">1.3.8.</span> <span class="nav-text">专题：NULL</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="仓中鼠"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">仓中鼠</p>
+  <div class="site-description" itemprop="description">仓中鼠，食积粟，居大庑之下，不见人犬之忧。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/pd0820" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;pd0820" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">仓中鼠</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">NaNm</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">NaN:aN</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
