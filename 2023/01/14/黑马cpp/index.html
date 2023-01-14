@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <script type="text/javascript" src="/love.js"></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"manual","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="总结cpp中最基础的操作，以便忘了一看就能记起来。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="黑马C++">
+<meta property="og:url" content="http://example.com/2023/01/14/%E9%BB%91%E9%A9%ACcpp/index.html">
+<meta property="og:site_name" content="仓中鼠的博客">
+<meta property="og:description" content="总结cpp中最基础的操作，以便忘了一看就能记起来。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-14T14:34:09.000Z">
+<meta property="article:modified_time" content="2023-01-14T14:38:51.484Z">
+<meta property="article:author" content="仓中鼠">
+<meta property="article:tag" content="常识">
+<meta property="article:tag" content="cpp">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2023/01/14/%E9%BB%91%E9%A9%ACcpp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>黑马C++ | 仓中鼠的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <a target="_blank" rel="noopener" href="https://github.com/pd0820" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">仓中鼠的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录美好生活</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/14/%E9%BB%91%E9%A9%ACcpp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="仓中鼠">
+      <meta itemprop="description" content="仓中鼠，食积粟，居大庑之下，不见人犬之忧。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="仓中鼠的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          黑马C++
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-01-14 22:34:09 / 修改时间：22:38:51" itemprop="dateCreated datePublished" datetime="2023-01-14T22:34:09+08:00">2023-01-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cpp/" itemprop="url" rel="index"><span itemprop="name">cpp</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cpp/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+            <div class="post-description">总结cpp中最基础的操作，以便忘了一看就能记起来。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="黑马C"><a href="#黑马C" class="headerlink" title="黑马C++"></a>黑马C++</h4><hr>
+<h5 id="一、第一天"><a href="#一、第一天" class="headerlink" title="一、第一天"></a>一、第一天</h5><pre><code># include &lt;iostream&gt;  //标准的输入输出流 in输入 out输出
+using namespace std;  //使用命名空间 std 打开一个叫std的房间
+
+//程序入口
+int main(void)
+&#123;
+    // cout 标准的输出
+    // &lt;&lt; 拼接的作用
+    // endl 结束换行
+    cout &lt;&lt; &quot;hello world&quot; &lt;&lt; 123 &lt;&lt; endl;
+    system(&quot;pause&quot;);  //阻塞功能
+    return EXIT_SUCCESS;  //返回正常退出
+&#125;
+</code></pre>
+<h6 id="1-1-双冒号作用域运算符"><a href="#1-1-双冒号作用域运算符" class="headerlink" title="1.1 双冒号作用域运算符"></a>1.1 双冒号作用域运算符</h6><p><code>::</code>:作用域运算符有两种用法</p>
+<p>1、作用域::变量名或其它名</p>
+<pre><code>eg:
+std::cout (用了这个，就不用using namespace std;了)
+</code></pre>
+<p>2、</p>
+<p>::变量名</p>
+<pre><code>int atk = 200;
+void test01(void)
+&#123;
+    int atk = 100;
+    cout &lt;&lt; &quot;攻击力：&quot; &lt;&lt; atk &lt;&lt; endl;
+    // ::双冒号（作用域运算符 :: 全局作用域）
+    cout &lt;&lt; &quot;全局攻击力：&quot; &lt;&lt; ::atk &lt;&lt; endl;
+&#125;
+输出结果：
+----------------
+攻击力：100
+全局攻击力：200
+----------------
+</code></pre>
+<h6 id="1-2-namespace-命名空间"><a href="#1-2-namespace-命名空间" class="headerlink" title="1.2 namespace(命名空间)"></a>1.2 namespace(命名空间)</h6><p><strong>用途</strong>：解决命名冲突问题<strong>注意</strong>：必须在全局作用域下声明<strong>内容</strong>：命名空间中可以放入函数，变量，结构体，类（命名空间还可以嵌套命名空间）<strong>另外</strong>：命名空间是开放的，可以随时加入新的成员；且命名空间可以起别名</p>
+<h6 id="1-3-using的使用"><a href="#1-3-using的使用" class="headerlink" title="1.3 using的使用"></a>1.3 using的使用</h6><p>1、使用using时，要避免局部变量与之冲突</p>
+<p>2、就近原则的优先级高于“打开房间”这个操作</p>
+<p>3、用using打开两个房间，会导致程序不知道用哪个</p>
+<h6 id="1-4-cpp对c语言的增强"><a href="#1-4-cpp对c语言的增强" class="headerlink" title="1.4 cpp对c语言的增强"></a>1.4 cpp对c语言的增强</h6><pre><code>* 全局变量检测增强
+
+* 函数检测增强:形参前必须要有类型;若定义函数名前不是void，则必须要有返回值;函数调用参数检测增强;
+
+* 类型转换检测增强
+
+* 结构体(struct)增强:cpp中结构体可以放函数,C语言中构造结构体用struct Person p1;cpp中可以直接用Person p1;
+
+* 相比C语言新增bool类型:bool flag = true;
+
+* 三目运算符的增强a&gt;b ? a : b = 100; b的值会被改成100(三目运算符中C语言返回的是值，cpp返回的是变量)
+</code></pre>
+<h6 id="1-5-const-常量"><a href="#1-5-const-常量" class="headerlink" title="1.5 const(常量)"></a>1.5 const(常量)</h6><p><strong>1、const不分配内存，但取地址会分配临时内存</strong></p>
+<p>c语言中，const修饰的变量，是伪常量，编译器是会分配内存的（可以用指针修改）</p>
+<p>cpp中，const不会分配内存，而是放在符号表中</p>
+<p>eg: <code>const int n_a = 10；</code><strong>（基本上只有这个方式，不会分配内存，而是放到符号表中）</strong></p>
+<table>
+<thead>
+<tr>
+<th>key(键值)</th>
+<th>value(实值)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>n_a</td>
+<td>10</td>
+</tr>
+</tbody></table>
+<pre><code>const int b = 20;
+int* p = (int*)&amp;b;
+*p = 200;
+cout &lt;&lt; b &lt;&lt; endl;
+cout &lt;&lt; *p &lt;&lt; endl;
+输出结果：
+20
+200
+
+为什么会输出200？
+在int* p = (int*)&amp;b;中编译器会临时开辟一块内存空间；
+相当于：
+int tmp = b;  //给tmp分配了一块内存空间，将b的值赋给它
+int* p = (int *)&amp;tmp;  //*p指向的是临时的那块空间
+</code></pre>
+<p><strong>2、用extern 编译器也会给const变量分配内存</strong></p>
+<p>C语言中，默认const是外部链接</p>
+<p>cpp中，默认const是内部链接（即只有在当前文件夹内才能访问）</p>
+<p>如果想提高const的作用域，用<code>extern</code></p>
+<p><code>extern const int a = 10;</code>(可将const转换为外部链接)</p>
+<p><strong>3、用变量初始化const变量</strong></p>
+<pre><code>int a = 10;
+const int b = a;  //会分配内存
+</code></pre>
+<p><strong>注意：只要是分配内存的，都能用指针修改它</strong></p>
+<p><strong>4、自定义数据类型分配内存</strong></p>
+<pre><code>struct Person
+&#123;
+    string m_Name;
+    int m_Age;
+&#125;
+</code></pre>
+<p><strong>5、尽量用const来代替#define</strong></p>
+<pre><code>在旧版本c中，如果想建立一个常量，必须使用预处理器
+#define MAX 1024;
+我们定义的宏MAX从未被编译器看到过，因为在预处理阶段，所有的MAX都已经被替换为了1024
+因此，并没有将MAX加入到符号表中。但如果我们使用这个常量获得一个错误的编译错误信息时，
+我们看到的是1024而非MAX。若MAX被定义在一个不是我写的头文件中，我可能不知道1024意味着什么，
+为了解决这个问题可能要花费很长时间。
+解决办法就是用一个常量替换上面的宏
+const MAX = 1024;
+1.const有类型，可进行编译器安全检查
+2.const有作用域，而#define默认是从定义处到程序结束
+</code></pre>
+<h6 id="1-6-引用"><a href="#1-6-引用" class="headerlink" title="1.6 引用"></a>1.6 引用</h6><p><strong>1、引用的实质就是起别名(<code>类型 &amp;别名 = 原名;</code>)</strong></p>
+<pre><code>int a = 10;
+int &amp;b = a;就是给变量a取一个别名b(实质：int* const b = &amp;a ;b存放的是a的地址)
+(当使用b时,eg:b = 10;实质上是:*b = 10;)
+(&amp;写到等号左侧，叫引用；写到右侧，就是取地址符)
+</code></pre>
+<p><strong>2、引用初始化后不可修改</strong></p>
+<p>即b做了a的别名以后，不能再做c的别名</p>
+<ul>
+<li><p>对数组建立引用</p>
+<p>  int arr[10];<br>  for (int i&#x3D;0; i&lt;10; ++i)<br>  {</p>
+<pre><code>  arr[i] = i;
+</code></pre>
+<p>  }<br>  &#x2F;&#x2F;第一种方式<br>  int (&amp;pArr)[10] &#x3D; arr;<br>  for (int i; i&lt;10; ++i)<br>  {</p>
+<pre><code>  cout &lt;&lt; pArr[i] &lt;&lt; &quot; &quot;;
+</code></pre>
+<p>  }<br>  cout &lt;&lt; endl;<br>  &#x2F;&#x2F;第二种方式<br>  typedef int(ARRAYREF)[10];  &#x2F;&#x2F;一个具有十个元素的int类型数组<br>  ARRAYREF &amp;pArr2 &#x3D; arr;<br>  for (int i &#x3D; 0; i &lt; 10; ++i)<br>  {<br>      cout &lt;&lt; pArr2[i] &lt;&lt; “ “;<br>  }<br>  cout &lt;&lt; endl;</p>
+</li>
+</ul>
+<p><strong>3、引用的注意事项</strong></p>
+<ul>
+<li><p>引用必须引一块合法(存在、能引用)的内存空间</p>
+</li>
+<li><p>不要返回局部变量的引用</p>
+</li>
+</ul>
+<p><strong>4、引用的本质(是一个指针常量)</strong></p>
+<pre><code>int a = 10;
+int&amp; aRef = a;  //自动转换为int* const aRef = &amp;a;这也能说明为什么必须初始化
+aRef = 20;  //内部发现aRef是引用，自动帮我们转换为：*aRef = 20；`````````````````````
+</code></pre>
+<p><strong>5、常量引用</strong></p>
+<pre><code>//int&amp; ref = 10;  //引用了不合法的内存
+const int&amp; ref = 10;  //加入const后，编译器处理方式为：int tmp = 10;const int &amp;ref = tmp;
+//ref = 10;
+int* p = (int*)&amp;ref;
+*p = 1000;
+cout &lt;&lt; &quot;ref = &quot; &lt;&lt; ref &lt;&lt; endl;
+输出结果：
+----------------
+ref = 1000
+----------------
+</code></pre>
+<p><strong>6、用一级指针引用可以代替二级指针</strong></p>
+<pre><code>void f(int &amp;p)  //主调函数传过来一个值，用&amp;能直接提取该值的地址
+&#123;
+    ;
+&#125;
+</code></pre>
+<p><strong>7、使用场景：修饰形参为只读（防君子不防小人）</strong></p>
+<pre><code>void showValue(const int &amp;val)
+&#123;
+    val += 1000;  //如果只是想显示内容，而不修改内容，那么就用const修饰这个形参
+    cout &lt;&lt; &quot;val = &quot; &lt;&lt; val &lt;&lt; endl;
+&#125;
+</code></pre>
+<p><strong>8、注意：const int &amp;a &#x3D; 10;会分配内存</strong></p>
+<h5 id="二、第二天"><a href="#二、第二天" class="headerlink" title="二、第二天"></a>二、第二天</h5><h6 id="2-1-class"><a href="#2-1-class" class="headerlink" title="2.1 class"></a>2.1 class</h6><pre><code>类的创建
+class 类名
+&#123;
+public:  //公共权限
+//设置成员属性
+//设置成员函数
+&#125;
+实例化对象
+类名 对象名;
+通过对象来设置属性，调用成员函数
+</code></pre>
+<p><strong>类是对对象的抽象对象是对类的实例</strong></p>
+<h6 id="2-2-内联函数-用于代替C语言中的预处理宏"><a href="#2-2-内联函数-用于代替C语言中的预处理宏" class="headerlink" title="2.2 内联函数(用于代替C语言中的预处理宏)"></a>2.2 内联函数(用于代替C语言中的预处理宏)</h6><p>宏：</p>
+<pre><code>C语言为什么要用宏？
+答：我们在编程时，有一些很短但是执行频繁的计算；因为太短了，我不想写成函数，又可以避免函数调用的开销，所以用宏。
+
+但是宏有不小的缺点，宏的缺点如下：
+1、运行结果与预想的不符(宏看起来像一个函数调用，但会隐藏一些难以发现的错误)
+eg:
+定义一个加法
+#define MyADD(x, y) x+y
+void test01()
+&#123;
+    int ret = MyADD(10, 20) * 20;
+    cout &lt;&lt; &quot;ret = &quot; &lt;&lt; ret &lt;&lt; endl;
+&#125;
+输出结果：
+-------------
+ret = 410
+-------------
+可以预想到实际运行的是x+y*20 = 410
+
+优化一下（把括号加上，避免算数优先级导致问题）：
+#define MyCompare(a, b) ((a) &lt; (b)) ? (a) : (b)
+void test02()
+&#123;
+    int a = 10;
+    int b = 20;
+    int ret = MyCompare(++a, b);
+
+    cout &lt;&lt; &quot;ret = &quot; &lt;&lt; ret &lt;&lt; endl;
+&#125;
+输出结果：
+-------------
+ret = 12
+-------------
+还是与预想的11不符
+
+2、在cpp中，预处理器不允许访问类的成员，也就是说预处理器宏不能用作类的成员函数
+</code></pre>
+<p>内联函数：</p>
+<pre><code>内联函数定义
+inline 函数定义
+eg：
+inline void mycompare(int a, int b)
+&#123;
+    int ret = a &lt; b ? a : b
+    cout &lt;&lt; &quot;ret = &quot; &lt;&lt; ret &lt;&lt; endl;
+&#125;
+
+内联函数注意事项：
+inline void func();  //内联函数声明
+inline void func()
+&#123; 
+    ; 
+&#125;  //如果函数实现的时候，没有加inline关键字，那么这个函数依然不算内联函数
+
+内联函数的优点：
+&quot;以空间换时间&quot;（内联函数除了没有宏的缺点外，基本可以当做宏来使用）
+
+内联函数与class：
+在class(类)中，成员函数默认都是加了内联函数关键字(inline)的
+
+内联函数与编译器：
+内联函数只是给编译器一个建议，编译器不一定会接受这种建议，如果你没有
+将函数声明为内联函数，编译器也可能将小的，简单的函数声明为内联函数；
+在这些情况下，编译器不会将inline关键字修饰的函数当内联函数处理
+1.不能存在任何形式的循环语句
+2.不能存在过多的条件判断语句
+3.函数体不能过于庞大
+4.不能对函数进行取址操作
+</code></pre>
+<h6 id="2-3-函数的默认参数"><a href="#2-3-函数的默认参数" class="headerlink" title="2.3 函数的默认参数"></a>2.3 函数的默认参数</h6><pre><code>//函数的默认参数 参数后面 = ......
+//函数参数的注意事项，如果有一个位置有了默认参数，那么从这个位置开始，从左往右都必须有默认参数
+void func(int a =10, int b, int c =1)  //a有了默认参数，a右边的b没有，报错
+&#123;
+    cout &lt;&lt; &quot;ａ+ b + c = &quot; &lt;&lt; a + b + c&lt;&lt; endl;
+&#125;
+void test01()
+&#123;
+    func(1, 2, 3);
+&#125;
+注意:
+//函数声明里面有了默认参数，那么函数实现的时候必须没有
+//函数声明和实现中，只能有一个默认参数，不要同时出现，因为我可能写的不一样，编译器不知道用哪个
+void myFunc(int a = 10, int b = 10);
+void myFunc(int a = 10, int b = 10)&#123;&#125;
+报错：重定义默认参数
+</code></pre>
+<p>附加：占位参数</p>
+<pre><code>//函数 占位参数
+//如果有了占位参数，函数调用时候必须要提供这个参数，但是用不到这个参数
+//占位参数 没有什么用 只有后面重载 ++符号才有一点用
+//占位参数 可以有默认值
+void func2(int a, int)
+&#123;
+
+&#125;
+void test02()
+&#123;
+    func2(10, 1);
+&#125;
+</code></pre>
+<h6 id="专题：函数重载-overload"><a href="#专题：函数重载-overload" class="headerlink" title="专题：函数重载(overload)"></a>专题：函数重载(overload)</h6><p>实现函数重载的条件</p>
+<p>1、同一个作用域</p>
+<p>2、参数个数不同or参数类型不同or参数顺序不同</p>
+<p>3、返回值类型不能作为函数重载的条件（因为调用函数时eg：func(a,b);无法区分到底用不用返回值）</p>
+<p>4、当函数重载碰到了默认参数时，要注意避免二义性问题</p>
+<pre><code>eg:
+void func2(int a, int b = 10)
+&#123;
+
+&#125;
+void func2(int a)
+&#123;
+
+&#125;
+</code></pre>
+<p>5、const也可以作为重载的条件</p>
+<pre><code>void func3(const int &amp;a)  //引用必须要引合法的内存空间//const也可以作为重载的条件
+&#123;
+
+&#125;
+void test03()
+&#123;
+    int a = 10;
+    func3(10);
+&#125;
+</code></pre>
+<p>函数重载的原理</p>
+<pre><code>为实现函数重载，不同的编译器会用不同的机制来修饰函数名
+如：void func(),编译器内部可能会将其修饰为_func;
+void func(int x),编译器内部可能将其修饰为_func_int;
+void func(int x, cahr c),编译器内部可能将其修饰为_func_int_char
+</code></pre>
+<h6 id="2-4-extern-“C”浅析"><a href="#2-4-extern-“C”浅析" class="headerlink" title="2.4 extern “C”浅析"></a>2.4 extern “C”浅析</h6><pre><code>解决的问题 在C++中调用C语言的函数(由于函数重载，C++中编译器可能会把函数名改掉)
+(C++比C语言多了些特性，所以直接调用可能会出问题，用下面的方式能屏蔽C++的特性，用C语言的语法规则使用函数)
+
+调用多个：
+#ifdef __cplusplus
+extern &quot;C&quot; &#123;
+#endif
+......(C语言的函数 eg: void func(); )
+#ifdef __cplusplus
+&#125;
+#endif
+
+调用单个:
+extern &quot;C&quot; void func();
+</code></pre>
+<h6 id="专题：封装"><a href="#专题：封装" class="headerlink" title="专题：封装"></a>专题：封装</h6><p><strong>1、属性和行为作为一个整体来表示生活中的事物</strong></p>
+<p>（与C语言相区分，C语言中strucrt中不能放函数，就可能造成“人”的行为作用到“狗”的属性上）</p>
+<p><strong>2、在c++中struct和class是一个意思，唯一的不同，默认权限， struct是public，而class默认权限是private</strong></p>
+<p><strong>3、私有权限(private) 就是私有成员，在类内部可以访问，类外部不可访问公共权限(public) 在类内部和外部都可以访问保护权限(protected) 类内部可以访问（以及当前类子类可以访问），类外部不可以访问</strong></p>
+<p><strong>建议：将所有成员变量都设置为private，对外提供读或写的接口</strong></p>
+<h5 id="三、第三天"><a href="#三、第三天" class="headerlink" title="三、第三天"></a>三、第三天</h5><h6 id="3-1-分文件编写"><a href="#3-1-分文件编写" class="headerlink" title="3.1 分文件编写"></a>3.1 分文件编写</h6><p><code>.h</code>中写类的成员函数的申明</p>
+<p><code>.cpp</code>中写成员函数的实现</p>
+<h6 id="3-2-对象的构造-初始化-与析构-清理"><a href="#3-2-对象的构造-初始化-与析构-清理" class="headerlink" title="3.2 对象的构造(初始化)与析构 (清理)"></a>3.2 对象的构造(初始化)与析构 (清理)</h6><p>1、对象的初始化与清理</p>
+<pre><code>当定义了一个类后
+Person p1;  
+程序员若没有提供构造函数和析构函数
+编译器就默认调用了构造函数和析构函数，但此时构造函数和析构函数是系统提供的两个空实现的函数
+
+构造函数：
+1.与类名相同,没有返回值，不写void，可以发生重载（即可以有参数，可以有多个构造函数）
+2.构造函数由编译器自动调用，而不是手动，而且只会调用一次
+
+3.
+eg:
+Person()
+&#123;
+    cout &lt;&lt; &quot;构造函数的调用&quot; &lt;&lt; endl;
+&#125;
+
+析构函数：
+1.与类名相同，类名前面加一个符号 &quot;~&quot;，也没有返回值，不写void，不可以有参数（不能发生函数重载）
+2.析构函数由编译器自动调用，而不是手动，而且只会调用一次
+3.构函数调用于主调函数结束之后。所以如果是在main函数中调用，要等函数全部执行完才调用，我们就看不到。
+4.
+eg:
+~Person()
+&#123;
+    cout &lt;&lt; &quot;析构函数的调用&quot; &lt;&lt; endl;
+&#125;
+注意：构造和析构必须写在public下
+</code></pre>
+<p>2、构造函数的分类及调用</p>
+<pre><code>1.按照参数有无进行分类:
+无参构造函数的写法：
+Person()  //无参构造函数又叫默认构造函数
+&#123;
+    cout &lt;&lt; &quot;无参构造函数调用&quot; &lt;&lt; endl;
+&#125;
+无参构造函数的调用：
+Person p1;(注意：不要写成 Person p1(); 编译器会把这个当做是函数声明
+有参构造函数的写法：
+Person(int a)
+&#123;
+    cout &lt;&lt; &quot;有参构造函数调用&quot; &lt;&lt; endl;
+&#125;
+有参构造函数的调用：
+Person p2(10);   or   Person p2 = Person(10);
+
+**附加知识点**
+Person(10)； 匿名对象，执行当前行后就会释放这个对象（注意与上面的区分）
+
+2.按照类型进行分类
+普通构造函数（就是上面的无参和有参）
+拷贝构造函数的写法
+Person(const Person&amp; p)//因为是“拷贝”，不让修改，所以加const
+&#123;
+    m_Age = p.m_Age;
+    cout &lt;&lt; &quot;拷贝构造函数调用&quot; &lt;&lt; endl;
+&#125;
+拷贝构造函数的调用
+Person p1(p2);   or   Person p1 = Person(p2);
+
+注意：不能用拷贝构造函数初始化匿名对象
+eg：
+Person(p5);  //如果这么写，编译器会认为你写的是 Person p5; 即对象的声明
+</code></pre>
+<p>注意：隐式类型转换</p>
+<pre><code>Person p7 = 100;  //相当于调用了Person p7 = Person(100);  隐式类型转换
+Person p8 = p7;  //相当于调用了Person p8 = Person(p7);  隐式类型转换
+</code></pre>
+<p>3、拷贝构造函数调用时机</p>
+<p>（1）用已经创建好的对象来初始化新的对象</p>
+<pre><code>void test01()
+&#123;
+    Person p1;
+    p1.m_Age = 10;
+    Person p2 = Person(p1);
+&#125;
+</code></pre>
+<p>（2）以值传递的方式给函数的参数传值</p>
+<pre><code>void doWork(Person p1)  //Person p1 = Person(p);
+&#123;
+
+&#125;
+void test02()
+&#123;
+    Person p;
+    p.m_Age = 10;
+    doWork(p);
+&#125;
+</code></pre>
+<p>（3）以值方式返回局部对象</p>
+<pre><code>Person doWork2()
+&#123;
+    Person p1;
+    return p1;
+&#125;
+void test03()
+&#123;
+    Person p = doWork2();
+&#125;
+</code></pre>
+<p>4、构造函数的调用规则</p>
+<p>默认情况下，c++编译器至少为我们写的类提供三个函数</p>
+<p>1.默认构造函数（无参，函数体为空）</p>
+<p>2.默认析构函数（无参，函数体为空）</p>
+<p>3.默认拷贝构造函数，对类中非静态成员属性简单值拷贝</p>
+<p>注意：当用户定义了有参的构造，系统就不会提供默认构造函数，但是会提供拷贝构造函数</p>
+<p>注意：当用户定义了拷贝构造，c++就不会提供其它构造函数</p>
+<h6 id="3-3-深拷贝和浅拷贝"><a href="#3-3-深拷贝和浅拷贝" class="headerlink" title="3.3 深拷贝和浅拷贝"></a>3.3 深拷贝和浅拷贝</h6><p>系统默认提供的拷贝构造，会进行简单的值拷贝</p>
+<p>如果属性里有指向堆区空间的数据，那么简单的浅拷贝会导致重复释放内存的异常</p>
+<p>解决上述问题，需要我们自己提供拷贝构造函数，进行深拷贝</p>
+<h6 id="3-4-初始化列表"><a href="#3-4-初始化列表" class="headerlink" title="3.4 初始化列表"></a>3.4 初始化列表</h6><p>在构造函数后面 + ： 属性（值 or 参数），属性（值 or 参数）…</p>
+<h1 id=""><a href="#" class="headerlink" title=""></a></h1>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>仓中鼠
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2023/01/14/%E9%BB%91%E9%A9%ACcpp/" title="黑马C++">http://example.com/2023/01/14/黑马cpp/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+      
+      <div>
+        
+          
+        
+      </div>
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%B8%B8%E8%AF%86/" rel="tag"><i class="fa fa-tag"></i> 常识</a>
+              <a href="/tags/cpp/" rel="tag"><i class="fa fa-tag"></i> cpp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/01/14/%E5%87%BD%E6%95%B0%E4%B8%8E%E6%8C%87%E9%92%88/" rel="prev" title="函数与指针">
+      <i class="fa fa-chevron-left"></i> 函数与指针
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%BB%91%E9%A9%ACC"><span class="nav-number">1.</span> <span class="nav-text">黑马C++</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%AC%AC%E4%B8%80%E5%A4%A9"><span class="nav-number">1.1.</span> <span class="nav-text">一、第一天</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1-1-%E5%8F%8C%E5%86%92%E5%8F%B7%E4%BD%9C%E7%94%A8%E5%9F%9F%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 双冒号作用域运算符</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-2-namespace-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 namespace(命名空间)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-3-using%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.3 using的使用</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-4-cpp%E5%AF%B9c%E8%AF%AD%E8%A8%80%E7%9A%84%E5%A2%9E%E5%BC%BA"><span class="nav-number">1.1.4.</span> <span class="nav-text">1.4 cpp对c语言的增强</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-5-const-%E5%B8%B8%E9%87%8F"><span class="nav-number">1.1.5.</span> <span class="nav-text">1.5 const(常量)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-6-%E5%BC%95%E7%94%A8"><span class="nav-number">1.1.6.</span> <span class="nav-text">1.6 引用</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%AC%AC%E4%BA%8C%E5%A4%A9"><span class="nav-number">1.2.</span> <span class="nav-text">二、第二天</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-class"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 class</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-2-%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0-%E7%94%A8%E4%BA%8E%E4%BB%A3%E6%9B%BFC%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E9%A2%84%E5%A4%84%E7%90%86%E5%AE%8F"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 内联函数(用于代替C语言中的预处理宏)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-3-%E5%87%BD%E6%95%B0%E7%9A%84%E9%BB%98%E8%AE%A4%E5%8F%82%E6%95%B0"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 函数的默认参数</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9A%E5%87%BD%E6%95%B0%E9%87%8D%E8%BD%BD-overload"><span class="nav-number">1.2.4.</span> <span class="nav-text">专题：函数重载(overload)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-4-extern-%E2%80%9CC%E2%80%9D%E6%B5%85%E6%9E%90"><span class="nav-number">1.2.5.</span> <span class="nav-text">2.4 extern “C”浅析</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%B8%93%E9%A2%98%EF%BC%9A%E5%B0%81%E8%A3%85"><span class="nav-number">1.2.6.</span> <span class="nav-text">专题：封装</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%AC%AC%E4%B8%89%E5%A4%A9"><span class="nav-number">1.3.</span> <span class="nav-text">三、第三天</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#3-1-%E5%88%86%E6%96%87%E4%BB%B6%E7%BC%96%E5%86%99"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 分文件编写</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%9E%84%E9%80%A0-%E5%88%9D%E5%A7%8B%E5%8C%96-%E4%B8%8E%E6%9E%90%E6%9E%84-%E6%B8%85%E7%90%86"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 对象的构造(初始化)与析构 (清理)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-3-%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 深拷贝和浅拷贝</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-4-%E5%88%9D%E5%A7%8B%E5%8C%96%E5%88%97%E8%A1%A8"><span class="nav-number">1.3.4.</span> <span class="nav-text">3.4 初始化列表</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text"></span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="仓中鼠"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">仓中鼠</p>
+  <div class="site-description" itemprop="description">仓中鼠，食积粟，居大庑之下，不见人犬之忧。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/pd0820" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;pd0820" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2840156124@qq.com" title="E-Mail → mailto:2840156124@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">仓中鼠</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">18k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:07</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+
