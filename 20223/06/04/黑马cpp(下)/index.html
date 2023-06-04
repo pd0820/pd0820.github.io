@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <script type="text/javascript" src="/love.js"></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+  </script>
+
+  <meta name="description" content="黑马C++ 一、第六天1.1 静态联编和动态联编联编（Binding）是将程序中的函数、变量与相应的内存地址或存储位置关联起来的过程。  C++中的多态主要指：动态多态 静态多态：函数重载，运算符重载 动态多态：父子继承 + 虚函数  动态多态需满足条件：  父类中有虚函数 子类重写父类的虚函数 父类的指针或引用,指向子类的对象  **重写：子类重新实现父类中的虚函数，必须返回值，函数名，参数一致">
+<meta property="og:type" content="article">
+<meta property="og:title" content="总结cpp中最基础的操作，以便忘了一看就能记起来。">
+<meta property="og:url" content="http://example.com/20223/06/04/%E9%BB%91%E9%A9%ACcpp(%E4%B8%8B)/index.html">
+<meta property="og:site_name" content="仓中鼠的博客">
+<meta property="og:description" content="黑马C++ 一、第六天1.1 静态联编和动态联编联编（Binding）是将程序中的函数、变量与相应的内存地址或存储位置关联起来的过程。  C++中的多态主要指：动态多态 静态多态：函数重载，运算符重载 动态多态：父子继承 + 虚函数  动态多态需满足条件：  父类中有虚函数 子类重写父类的虚函数 父类的指针或引用,指向子类的对象  **重写：子类重新实现父类中的虚函数，必须返回值，函数名，参数一致">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pd0820.oss-cn-shenzhen.aliyuncs.com/typora/202306021248036.png">
+<meta property="og:image" content="https://pd0820.oss-cn-shenzhen.aliyuncs.com/typora/202306021603117.png">
+<meta property="article:published_time" content="+020223-06-04T10:41:36.000Z">
+<meta property="article:modified_time" content="2023-06-04T10:43:52.561Z">
+<meta property="article:author" content="仓中鼠">
+<meta property="article:tag" content="常识">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pd0820.oss-cn-shenzhen.aliyuncs.com/typora/202306021248036.png">
+
+<link rel="canonical" href="http://example.com/20223/06/04/%E9%BB%91%E9%A9%ACcpp(%E4%B8%8B)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>总结cpp中最基础的操作，以便忘了一看就能记起来。 | 仓中鼠的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <a target="_blank" rel="noopener" href="https://github.com/pd0820" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">仓中鼠的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录美好生活</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">4</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/20223/06/04/%E9%BB%91%E9%A9%ACcpp(%E4%B8%8B)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="仓中鼠">
+      <meta itemprop="description" content="仓中鼠，食积粟，居大庑之下，不见人犬之忧。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="仓中鼠的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          总结cpp中最基础的操作，以便忘了一看就能记起来。
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：20223-06-04 18:41:36" itemprop="dateCreated datePublished" datetime="20223-06-04T18:41:36+08:00">20223-06-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-06-04 18:43:52" itemprop="dateModified" datetime="2023-06-04T18:43:52+08:00">2023-06-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="黑马C"><a href="#黑马C" class="headerlink" title="黑马C++"></a>黑马C++</h4><hr>
+<h5 id="一、第六天"><a href="#一、第六天" class="headerlink" title="一、第六天"></a>一、第六天</h5><h6 id="1-1-静态联编和动态联编"><a href="#1-1-静态联编和动态联编" class="headerlink" title="1.1 静态联编和动态联编"></a>1.1 静态联编和动态联编</h6><p>联编（Binding）是将程序中的函数、变量与相应的内存地址或存储位置关联起来的过程。</p>
+<blockquote>
+<p>C++中的多态主要指：动态多态</p>
+<p>静态多态：函数重载，运算符重载</p>
+<p>动态多态：父子继承 + 虚函数</p>
+</blockquote>
+<p>动态多态需满足条件：</p>
+<ol>
+<li>父类中有虚函数</li>
+<li>子类重写父类的虚函数</li>
+<li>父类的指针或引用,指向子类的对象</li>
+</ol>
+<p>**重写：子类重新实现父类中的虚函数，必须返回值，函数名，参数一致才称为重写</p>
+<p>**子类在做重写的时候，可以不加关键字virtual</p>
+<pre><code class="cpp">class Animal
+&#123;
+public:
+    virtual void speak()
+    &#123;
+        cout &lt;&lt; &quot;动物在说话&quot; &lt;&lt; endl;
+    &#125;
+&#125;;
+
+class Cat:public Animal
+&#123;
+public:
+    void speak()
+    &#123;
+        cout &lt;&lt; &quot;小猫在说话&quot; &lt;&lt; endl;
+    &#125;
+&#125;;
+
+class Dog :public Animal
+&#123;
+public:
+    void speak()
+    &#123;
+        cout &lt;&lt; &quot;小狗在说话&quot; &lt;&lt; endl;
+    &#125;
+&#125;;
+
+//对于有父子关系的两个类，C++可以不需要通过类型强转
+//静态联编 --- 地址早绑定
+//动态联编 --- 地址晚绑定
+
+//多态的满足条件
+//1.父类中有虚函数
+//2.子类重写父类的虚函数
+//3.父类的指针或引用，指向子类的对象
+
+//重写：子类重新实现父类中的虚函数，必须返回值，函数名，参数一致才称为重写
+//子类在做重写的时候，可以不加关键字virtual
+void doSpeak(Animal&amp; animal)
+&#123;
+    animal.speak();
+&#125;
+
+void test01()
+&#123;
+    Cat cat;
+    doSpeak(cat);
+
+    Dog dog;
+    doSpeak(dog);
+&#125;
+</code></pre>
+<h6 id="1-2-多态原理"><a href="#1-2-多态原理" class="headerlink" title="1.2 多态原理"></a>1.2 多态原理</h6><p>当父类存在虚函数后，内部发生结构变化：</p>
+<p>多了指针vfptr（虚函数指针）指向vftable（虚函数表），虚函数内部记录着虚函数的地址。当子类重写后，会修改子类中虚函数表中记录的地址。注意：这并不会影响到父类的虚函数表</p>
+<img src="https://pd0820.oss-cn-shenzhen.aliyuncs.com/typora/202306021248036.png" alt="image-20230602124829928" style="zoom: 67%;" />
+
+<h6 id="1-3-多态的深度剖析"><a href="#1-3-多态的深度剖析" class="headerlink" title="1.3 多态的深度剖析"></a>1.3 多态的深度剖析</h6><pre><code class="cpp">//接上面的代码
+void test02()
+&#123;
+    Animal* animal = new Cat;
+    //animal-&gt;speak();
+    //*(int*)*(int*)animal speak函数的地址
+    ((void (*)())(*(int*)*(int*)animal))();
+
+    //C++的默认调用惯例 __stdcall
+    //下面的写法 调用惯例 __cdecl，我们要指定惯例为stdcall
+    typedef void(__stdcall*FUNC)(int);
+    (FUNC (*((int*)*(int*)animal + 1)))(10);
+&#125;
+</code></pre>
+<h6 id="1-4-多态案例-计算器"><a href="#1-4-多态案例-计算器" class="headerlink" title="1.4 多态案例-计算器"></a>1.4 多态案例-计算器</h6><pre><code class="cpp">//利用多态实现计算器
+class AbstractCalculator
+&#123;
+public:
+
+    virtual int getResult()
+    &#123;
+        return 0;
+    &#125;
+    int m_A;
+    int m_B;
+&#125;;
+//加法计算器
+class AddCalculator:public AbstractCalculator
+&#123;
+    virtual int getResult()
+    &#123;
+        return m_A + m_B;
+    &#125;
+&#125;;
+//减法计算器
+class SubCalculator :public AbstractCalculator
+&#123;
+    virtual int getResult()
+    &#123;
+        return m_A - m_B;
+    &#125;
+&#125;;
+//乘法计算器
+class MultiCalculator :public AbstractCalculator
+&#123;
+    virtual int getResult()
+    &#123;
+        return m_A * m_B;
+    &#125;
+&#125;;
+
+void test01()
+&#123;
+    //加法计算器
+    AbstractCalculator* calculator = new AddCalculator;
+    calculator-&gt;m_A = 20;
+    calculator-&gt;m_B = 20;
+    cout &lt;&lt; calculator-&gt;getResult() &lt;&lt; endl;
+
+    delete calculator;
+
+    //减法计算器
+    calculator = new SubCalculator;
+    calculator-&gt;m_A = 20;
+    calculator-&gt;m_B = 20;
+    cout &lt;&lt; calculator-&gt;getResult() &lt;&lt; endl;
+
+&#125;
+//多态的好处 对扩展性提高、组织性强、可读性强
+//如果父类中有了虚函数，子类并没有重写子类的虚函数，那么这样的代码是毫无意义的
+//如果子类不重写父类虚函数，那么没有用到多态带来的好处，而且内部结构还变得更为复杂了
+</code></pre>
+<h6 id="1-5-抽象类和纯虚函数"><a href="#1-5-抽象类和纯虚函数" class="headerlink" title="1.5 抽象类和纯虚函数"></a>1.5 抽象类和纯虚函数</h6><p>纯虚函数语法 <code>virtual int getResult() = 0;</code>（告诉编译器，在vtable中为函数保留一个位置，但在这个特定位置不放地址）</p>
+<p>如果类中有了纯虚函数，那么这个类也称为抽象类，抽象类是无法实例化对象的</p>
+<p>继承了抽象类的子类，必须要重写父类中的纯虚函数，否则的话，子类也是属于抽象类，无法实例化对象了</p>
+<h6 id="1-6-虚析构与纯虚析构"><a href="#1-6-虚析构与纯虚析构" class="headerlink" title="1.6 虚析构与纯虚析构"></a>1.6 虚析构与纯虚析构</h6><p>如果子类中有数据创建在堆区，那么多态情况下，不会调用子类的析构代码</p>
+<p>解决方案：利用虚析构&#x2F;纯虚析构</p>
+<p>虚析构在析构前加关键字virtual即可</p>
+<p>纯虚析构 <code>virtual ~函数名（）= 0；</code>纯虚析构，类内声明，必须类外实现</p>
+<p>如果一个类中有了纯虚析构函数，那么这个类属于抽象类</p>
+<h6 id="1-7-向上向下类型转换"><a href="#1-7-向上向下类型转换" class="headerlink" title="1.7 向上向下类型转换"></a>1.7 向上向下类型转换</h6><img src="https://pd0820.oss-cn-shenzhen.aliyuncs.com/typora/202306021603117.png" alt="image-20230602160324000" style="zoom:67%;" />
+
+<h6 id="1-8-重载重写重定义概念"><a href="#1-8-重载重写重定义概念" class="headerlink" title="1.8 重载重写重定义概念"></a>1.8 重载重写重定义概念</h6><p><strong>重载：</strong></p>
+<p>1.同一个作用域，函数名相同</p>
+<p>2.参数个数、参数类型、参数顺序不同</p>
+<p>3.返回值不可以作为重载条件</p>
+<p>4.const也可以作为重载条件</p>
+<p><strong>重写：</strong></p>
+<p>1.继承关系</p>
+<p>2.子类重写父类的虚函数</p>
+<p>3.函数返回值、函数名、参数列表与父类都一致</p>
+<p><strong>重定义（重定义）：</strong></p>
+<p>1.继承关系</p>
+<p>2.非虚函数，子类重新定义父类的同名成员</p>
+<h6 id="1-9-电脑组装案例"><a href="#1-9-电脑组装案例" class="headerlink" title="1.9 电脑组装案例"></a>1.9 电脑组装案例</h6><pre><code class="cpp">//抽象层
+//抽象的CPU
+class CPU
+&#123;
+public:
+    virtual void calculate() = 0;
+&#125;;
+
+//抽象的显卡
+class VideoCard
+&#123;
+public:
+    virtual void display() = 0;
+&#125;;
+
+//抽象的内存
+class Memory
+&#123;
+public:
+    virtual void storge() = 0;
+&#125;;
+
+//电脑类
+class computer
+&#123;
+public:
+    computer(CPU* cpu, VideoCard* card, Memory* memory)
+    &#123;
+        this-&gt;cpu = cpu;
+        this-&gt;card = card;
+        this-&gt;memory = memory;
+    &#125;
+
+    //让电脑工作
+    void doWork()
+    &#123;
+        cpu-&gt;calculate();
+        card-&gt;display();
+        memory-&gt;storge();
+    &#125;
+
+    ~computer()
+    &#123;
+        if (this-&gt;cpu != NULL)
+        &#123;
+            delete this-&gt;cpu;
+            this-&gt;cpu = NULL;
+        &#125;
+        if (this-&gt;card != NULL)
+        &#123;
+            delete this-&gt;card;
+            this-&gt;card = NULL;
+        &#125;
+        if (this-&gt;memory != NULL)
+        &#123;
+            delete this-&gt;memory;
+            this-&gt;memory = NULL;
+        &#125;
+    &#125;
+
+    CPU* cpu;
+    VideoCard* card;
+    Memory* memory;
+&#125;;
+
+//实现层
+//intel的CPU
+class intelCPU :public CPU
+&#123;
+public:
+    virtual void calculate()
+    &#123;
+        cout &lt;&lt; &quot;intel的CPU开始计算了&quot; &lt;&lt; endl;
+    &#125;
+&#125;;
+//intel的显卡
+class intelVideoCard :public VideoCard
+&#123;
+    virtual void display()
+    &#123;
+        cout &lt;&lt; &quot;intel的显卡开始显示了&quot; &lt;&lt; endl;
+    &#125;
+&#125;;
+//intel的内存
+class intelMemory :public Memory
+&#123;
+    virtual void storge()
+    &#123;
+        cout &lt;&lt; &quot;intel的内存开始存储了&quot; &lt;&lt; endl;
+    &#125;
+&#125;;
+
+void test01()
+&#123;
+    //第一台电脑组装
+    cout &lt;&lt; &quot;第一台电脑组装后：&quot; &lt;&lt; endl;
+    CPU* intel1 = new intelCPU;
+    VideoCard* card1 = new intelVideoCard;
+    Memory* mem1 = new intelMemory;
+
+    computer* computer1 = new computer(intel1, card1, mem1);
+    computer1-&gt;doWork();
+
+    delete computer1;
+&#125;
+</code></pre>
+<h5 id="二、第二天"><a href="#二、第二天" class="headerlink" title="二、第二天"></a>二、第二天</h5><h6 id="2-1-函数模板基础语法"><a href="#2-1-函数模板基础语法" class="headerlink" title="2.1 函数模板基础语法"></a>2.1 函数模板基础语法</h6><p><code>template&lt;typename T&gt;</code>告诉编译器T是万能数据类型，下面紧跟着的函数或者类中出现了这个T类型，不要报错</p>
+<p>调用模板函数的两种方式：</p>
+<p>1.自动类型推导—-必须让编译器推导一致T类型才能使用模板</p>
+<p>2.显示指定类型—-显示的告诉编译器T的类型 <code>mySwap&lt;int&gt;(a,b);</code></p>
+<p>即：模板使用的时候必须要告诉编译器T是什么类型，否则无法使用</p>
+<pre><code class="cpp">//利用模板实现通用的交换
+template&lt;typename T&gt; //T是一个通用类型，告诉编译器后面紧跟着的函数或类中出现了T，不要报错
+void mySwap(T&amp; a, T&amp; b)
+&#123;
+    T temp = a;
+    a = b;
+    b = temp;
+&#125;
+
+template&lt;typename T&gt;
+void mySwap2()
+&#123;
+
+&#125;
+
+void test01() 
+&#123;
+    int a = 10;
+    int b = 20;
+    char x = &#39;x&#39;;
+    //1.自动类型推导，必须让编译器推导出一致的T，才能使用模板
+    // mySwap(a, x);错误的//a,x不能推出一致的T类型
+    //mySwap(a, b);
+
+    //2.显示指定类型
+    //mySwap&lt;int&gt;(a, x);//显示指定类型，可以进行隐式类型转换，如果转不成功，那么也不可以使用模板
+    mySwap&lt;int&gt;(a, b);
+
+    cout &lt;&lt; &quot;a = &quot; &lt;&lt; a &lt;&lt; &quot; b = &quot; &lt;&lt; b &lt;&lt; endl;
+
+    mySwap2&lt;double&gt;();//模板必须要指定T的类型，才能使用
+&#125;
+</code></pre>
+<h6 id="2-2-函数模板案例之int和char的数组排序"><a href="#2-2-函数模板案例之int和char的数组排序" class="headerlink" title="2.2 函数模板案例之int和char的数组排序"></a>2.2 函数模板案例之int和char的数组排序</h6><pre><code class="cpp">//利用选择排序实现对int和char数组排序
+template &lt;class T&gt;
+void mySwap(T&amp; a, T&amp; b) 
+&#123;
+    T temp = a;
+    a = b;
+    b = temp;
+&#125;
+
+template&lt;typename T&gt;
+void mySort(T arr[],int len)
+&#123;
+    for (int i = 0; i &lt; len; ++i)
+    &#123;
+        int min = i;
+        for (int j = i + 1; j &lt; len; ++j)
+        &#123;
+            if (arr[min] &gt; arr[j])
+            &#123;
+                min = j;
+            &#125;
+        &#125;
+        //判断最小值下标和开始认定的i是否相等，如果不等，交换i和min下标的数据
+        if (min != i)
+        &#123;
+            mySwap(arr[i], arr[min]);
+        &#125;
+    &#125;
+&#125;
+
+template &lt;class T&gt;
+void printArray(T arr[], int len)
+&#123;
+    for (int i = 0; i &lt; len; ++i)
+    &#123;
+        cout &lt;&lt; arr[i] &lt;&lt; endl;
+    &#125;
+&#125;
+
+void test01()
+&#123;
+    int arr[] = &#123; 15,2,6,23,61 &#125;;
+    int len = sizeof(arr) / sizeof(int);
+    mySort(arr, len);
+
+    //打印数组
+    printArray(arr, len);
+
+    char charArr[] = &quot;helloworld&quot;;
+    len = sizeof(charArr) / sizeof(char);
+    mySort(charArr, len);
+    printArray(charArr, len);
+&#125;
+</code></pre>
+<h6 id="2-3-函数模板与普通函数的区别及调用规则"><a href="#2-3-函数模板与普通函数的区别及调用规则" class="headerlink" title="2.3 函数模板与普通函数的区别及调用规则"></a>2.3 函数模板与普通函数的区别及调用规则</h6><p>普通函数可以隐式类型转换</p>
+<p>函数模板如果是自动类型推导，是不可以发生隐式类型转换的</p>
+<p>调用规则：</p>
+<p>1.如果函数模板和普通函数都可以实现调用，那么优先调用的是普通函数</p>
+<p>2.可以通过空参数列表语法来强制调用函数模板</p>
+<p>3.函数模板也可以发生函数重载</p>
+<p>4.如果函数模板可以产生更好的匹配，那么优先使用函数模板</p>
+<pre><code class="cpp">int myPlus(int a, int b)
+&#123;
+    return a + b;
+&#125;
+template&lt;class T&gt;
+T myPlus2(T a, T b)
+&#123;
+    return a + b;
+&#125;
+void test01()
+&#123;
+    int a = 10;
+    int b = 20;
+    char c = &#39;c&#39;;
+    cout &lt;&lt; myPlus(a, c) &lt;&lt; endl;//隐式类型转换，将char转为int类型
+    //myPlus2(a, c);//自动类型推导的方式是不能进行隐士类型转换的，但是显示指定类型的方式可以
+&#125;
+//普通函数与函数模板的调用规则
+template&lt;class T&gt;
+void myPrint(T a, T b)
+&#123;
+    cout &lt;&lt; &quot;函数模板调用&quot; &lt;&lt; endl;
+&#125;
+/*
+//假设传入的T是int类型，生成一个下面的函数，这个函数称为模板函数（注意：一个是函数模板，一个是模板函数）
+//根据这个函数模板产生的函数叫模板函数
+void myPrint(int a, int b)
+&#123;
+    cout &lt;&lt; &quot;函数模板调用&quot; &lt;&lt; endl;
+&#125;
+*/
+template&lt;class T&gt;
+void myPrint(T a, T b, T c)
+&#123;
+    cout &lt;&lt; &quot;函数模板调用myPrint(T a, T b，T c)&quot; &lt;&lt; endl;
+&#125;
+
+void myPrint(int a, int b)
+&#123;
+    cout &lt;&lt; &quot;普通函数调用&quot; &lt;&lt; endl;
+&#125;
+void test02()
+&#123;
+    //1.如果普通函数与函数模板可以同时调用，优先使用普通函数
+    int a = 0;
+    int b = 0;
+    myPrint(a, b);
+    //2.如果想强制使用函数模板中的内容，可以使用空参数列表
+    myPrint&lt;&gt;(a, b);
+    //3.函数模板也可以发生函数重载
+    myPrint(a, b, 10);
+    //4.如果函数模板可以产生更好的匹配，优先使用函数模板
+    char c = &#39;c&#39;;
+    char d = &#39;d&#39;;
+    myPrint(c, d);
+&#125;
+</code></pre>
+<h6 id="2-4-模板机制"><a href="#2-4-模板机制" class="headerlink" title="2.4 模板机制"></a>2.4 模板机制</h6><p>1.编译器并不是把函数模板处理成能够处理任何类型的函数</p>
+<p>2.函数模板通过具体类型产生不同的函数（产生了模板函数，见上面的代码）</p>
+<p>3.编译器会对函数模板进行两次编译，在声明的地方对模板代码本身进行编译，在调用的地方对参数替换后的代码进行编译</p>
+<h6 id="2-5-模板的局限性以及解决"><a href="#2-5-模板的局限性以及解决" class="headerlink" title="2.5 模板的局限性以及解决"></a>2.5 模板的局限性以及解决</h6><p>模板并不是真正的通用代码，对于一些自定义数据类型，模板有时候不能实现效果</p>
+<p>可以通过具体化实现对自定义数据类型进行操作</p>
+<p><code>template&lt;&gt;bool myCompare&lt;Person&gt;(Person&amp; a, Person&amp; b)</code></p>
+<pre><code class="cpp">#include&lt;string&gt;
+class Person
+&#123;
+public:
+    Person(string name, int age)
+    &#123;
+        this-&gt;m_Age = age;
+        this-&gt;m_Name = name;
+    &#125;
+
+    string m_Name;
+    int m_Age;
+&#125;;
+//通过模板进行两个数据的比较
+template&lt;class T&gt;
+bool myCompare(T&amp; a, T&amp; b)
+&#123;
+    if (a == b)
+    &#123;
+        return true;
+    &#125;
+    return false;
+&#125;
+//利用具体化Person函数，告诉编译器走Person对比代码
+template&lt;&gt;bool myCompare&lt;Person&gt;(Person&amp; a, Person&amp; b)
+&#123;
+    if (a.m_Age == b.m_Age &amp;&amp; a.m_Name == b.m_Name)
+    &#123;
+        return true;
+    &#125;
+    return false;
+&#125;
+void test01()
+&#123;
+    Person p1(&quot;Tom&quot;, 19);
+    Person p2(&quot;Jerry&quot;, 20);
+
+    bool ret = myCompare(p1, p2);
+    if (ret)
+    &#123;
+        cout &lt;&lt; &quot;p1和p2相等&quot; &lt;&lt; endl;
+    &#125;
+    else
+    &#123;
+        cout &lt;&lt; &quot;p1和p2不相等&quot; &lt;&lt; endl;
+    &#125;
+&#125;
+</code></pre>
+<h6 id="2-6-类模板的基本语法"><a href="#2-6-类模板的基本语法" class="headerlink" title="2.6 类模板的基本语法"></a>2.6 类模板的基本语法</h6><p>&#x3D;&#x3D;泛型编程：类型参数化&#x3D;&#x3D;</p>
+<p>template下面紧跟着的是个类，那么这个类成为类模板。</p>
+<p>类模板与函数模板区别：</p>
+<p>1.类模板使用时不可以使用类型推导，必须是显示指定类型</p>
+<p>2.类模板中的类型，可以有默认参数</p>
+<pre><code class="cpp">//template下面紧跟着的内容是类，那么这个类称为类模板
+//类模板中的类型也可以有默认参数
+//泛型编程：类型参数化
+template&lt;class NAMETYPE,class AGETYPE=int&gt;
+class Person
+&#123;
+public:
+    Person(NAMETYPE name, AGETYPE age)
+    &#123;
+        this-&gt;m_Name = name;
+        this-&gt;m_Age = age;
+    &#125;
+    NAMETYPE m_Name;
+    AGETYPE m_Age;
+&#125;;
+void test01()
+&#123;
+    //Persom p1(&quot;Tom,11&quot;);//对于类模板，使用时不能用自动类型推导
+    Person&lt;string&gt; p1(&quot;Tom&quot;, 11);//必须使用显示指定类型
+    cout &lt;&lt; &quot;姓名：&quot; &lt;&lt; p1.m_Name &lt;&lt; &quot; 年龄：&quot; &lt;&lt; p1.m_Age &lt;&lt; endl;
+&#125;
+</code></pre>
+<h6 id="2-7-类模板中的成员函数创建时机"><a href="#2-7-类模板中的成员函数创建时机" class="headerlink" title="2.7 类模板中的成员函数创建时机"></a>2.7 类模板中的成员函数创建时机</h6><p>&#x3D;&#x3D;类模板中的成员函数并不是一开始就创建出来的，而是在运行阶段才创建出来&#x3D;&#x3D;</p>
+<pre><code class="cpp">class Person1
+&#123;
+public:
+    void showPerson1()
+    &#123;
+        cout &lt;&lt; &quot;Person1 show&quot; &lt;&lt; endl;
+    &#125;
+&#125;;
+class Person2
+&#123;
+public:
+    void showPerson2()
+    &#123;
+        cout &lt;&lt; &quot;Person2 show&quot; &lt;&lt; endl;
+    &#125;
+&#125;;
+
+//类模板中的成员函数并不是一开始就创建出来的，而是在运行阶段才创建出来
+template&lt;class T&gt;
+class myClass
+&#123;
+public:
+
+    void func1()
+    &#123;
+        obj.showPerson1();
+    &#125;
+    void func2()
+    &#123;
+        obj.showPerson2();
+    &#125;
+    T obj;
+&#125;;
+
+void test01()
+&#123;
+    myClass&lt;Person1&gt; p1;
+    p1.func1();//运行成功
+    p1.func2();//&quot;showPerson2&quot;: 不是 &quot;Person1&quot; 的成员
+&#125;
+</code></pre>
+<h6 id="扩展：typeid-T1-name"><a href="#扩展：typeid-T1-name" class="headerlink" title="扩展：typeid(T1).name()"></a>扩展：<code>typeid(T1).name()</code></h6><p>用于查看T类型名称</p>
+<h6 id="2-8-类模板作为函数参数"><a href="#2-8-类模板作为函数参数" class="headerlink" title="2.8 类模板作为函数参数"></a>2.8 类模板作为函数参数</h6><p>1.指定传入类型</p>
+<p>2.参数模板化</p>
+<p>3.整个类模板化</p>
+<pre><code class="cpp">#include&lt;string&gt;
+template&lt;class NAMETYPE,class AGETYPE&gt;
+class Person
+&#123;
+public:
+    Person(NAMETYPE name, AGETYPE age)
+    &#123;
+        this-&gt;m_Name = name;
+        this-&gt;m_Age = age;
+    &#125;
+
+    NAMETYPE m_Name;
+    AGETYPE m_Age;
+&#125;;
+//1.指定传入的类型
+void doWork(Person&lt;string,int&gt;&amp; p)
+&#123;
+    cout &lt;&lt; &quot;姓名：&quot; &lt;&lt; p.m_Name &lt;&lt; &quot; 年龄：&quot; &lt;&lt; p.m_Age &lt;&lt; endl;
+&#125;
+void test01()
+&#123;
+    Person&lt;string, int&gt; p1(&quot;aaa&quot;, 10);
+    doWork(p1);
+&#125;
+
+//2.参数模板化
+template&lt;class T1,class T2&gt;
+void doWork2(Person&lt;T1,T2&gt;&amp; p)
+&#123;
+    cout &lt;&lt; typeid(T1).name() &lt;&lt; endl;
+    cout &lt;&lt; typeid(T2).name() &lt;&lt; endl;
+    cout &lt;&lt; &quot;姓名：&quot; &lt;&lt; p.m_Name &lt;&lt; &quot; 年龄：&quot; &lt;&lt; p.m_Age &lt;&lt; endl;
+&#125;
+void test02()
+&#123;
+    Person&lt;string, int&gt; p1(&quot;bbb&quot;, 10);
+    doWork2(p1);
+&#125;
+
+//3.整个类模板化
+template&lt;class T&gt;
+void doWork3(T&amp; p)
+&#123;
+    cout &lt;&lt; typeid(T).name() &lt;&lt; endl;
+    cout &lt;&lt; &quot;姓名：&quot; &lt;&lt; p.m_Name &lt;&lt; &quot; 年龄：&quot; &lt;&lt; p.m_Age &lt;&lt; endl;
+&#125;
+void test03()
+&#123;
+    Person&lt;string, int&gt; p1(&quot;ccc&quot;, 10);
+    doWork3(p1);
+&#125;
+</code></pre>
+<h6 id="2-9-类模板碰到继承的问题以及解决"><a href="#2-9-类模板碰到继承的问题以及解决" class="headerlink" title="2.9 类模板碰到继承的问题以及解决"></a>2.9 类模板碰到继承的问题以及解决</h6><p>如果父类是一个类模板，子类在做继承时，必须指出父类中T的类型，否则无法给父类中的T分配内存</p>
+<p>语法：<code>class Son :public Base&lt;T2&gt;</code></p>
+<pre><code class="cpp">template&lt;class T&gt;
+class Base
+&#123;
+    T m_A;//子类创建时，必须要知道T的类型，才能给父类中的m_A分配内存
+&#125;;
+
+template&lt;class T1, class T2&gt;
+class Son :public Base&lt;T2&gt;
+&#123;
+    T1 m_B;
+&#125;;
+
+void test01()
+&#123;
+    Son&lt;int, double&gt; s;
+&#125;
+</code></pre>
+<h6 id="2-10-类模板的类外实现"><a href="#2-10-类模板的类外实现" class="headerlink" title="2.10 类模板的类外实现"></a>2.10 类模板的类外实现</h6><p><code>template&lt;class T1, class T2&gt;</code></p>
+<p><code>void Person&lt;T1, T2&gt;::showPerson()&#123;&#125;</code></p>
+<pre><code class="cpp">#include&lt;string&gt;
+template&lt;class T1, class T2&gt;
+class Person
+&#123;
+public:
+    Person(T1 name, T2 age);
+
+    void showPerson();
+
+    T1 m_Name;
+    T2 m_Age;
+&#125;;
+
+template&lt;class T1,class T2&gt;
+Person&lt;T1,T2&gt;::Person(T1 name, T2 age)
+&#123;
+    this-&gt;m_Name = name;
+    this-&gt;m_Age = age;
+&#125;
+template&lt;class T1, class T2&gt;
+void Person&lt;T1, T2&gt;::showPerson()
+&#123;
+    cout &lt;&lt; &quot;姓名：&quot; &lt;&lt; this-&gt;m_Name &lt;&lt; &quot; 年龄：&quot; &lt;&lt; this-&gt;m_Age &lt;&lt; endl;
+&#125;
+
+void test01()
+&#123;
+    Person&lt;string, int&gt; p(&quot;aaa&quot;, 10);
+    p.showPerson();
+&#125;
+</code></pre>
+<h6 id="2-11-类模板的分文件编写问题以及解决"><a href="#2-11-类模板的分文件编写问题以及解决" class="headerlink" title="2.11 类模板的分文件编写问题以及解决"></a>2.11 类模板的分文件编写问题以及解决</h6><p>类模板不建议做分文件编写，因为成员函数创建在运行阶段，使用时必须包含.cpp才可以</p>
+<p>解决方案：将类中成员函数的声明和实现都写到一个文件中，并且将文件的后缀名改成.hpp（约定俗成）</p>
+<h6 id="2-12-类模板碰到友元函数"><a href="#2-12-类模板碰到友元函数" class="headerlink" title="2.12 类模板碰到友元函数"></a>2.12 类模板碰到友元函数</h6><p>全局函数做友元的类内实现</p>
+<p>全局函数做友元的类外实现</p>
+<p>1.模板函数的声明 2.模板函数的实现</p>
+<pre><code class="cpp"># include&lt;string&gt;
+//（属于2/3方法）告诉编译器有个Person模板类，先不要报错
+template&lt;class T1, class T2&gt; class Person;
+//（属于2方法）告诉编译器有一个模板函数的声明
+template&lt;class T1, class T2&gt; void printPerson2(Person&lt;T1, T2&gt;&amp; p);
+//（属于3方法）将模板函数的声明和实现写在一起
+template&lt;class T1, class T2&gt;
+void printPerson3(Person&lt;T1, T2&gt;&amp; p)
+&#123;
+    cout &lt;&lt; &quot;姓名：&quot; &lt;&lt; p.m_Name &lt;&lt; &quot; 年龄：&quot; &lt;&lt; p.m_Age &lt;&lt; endl;
+&#125;
+
+template&lt;class T1, class T2&gt;
+class Person
+&#123;
+    //1.全局函数配合友元做类内实现
+    friend void printPerson(Person&lt;T1, T2&gt;&amp; p)
+    &#123;
+        cout &lt;&lt; &quot;姓名：&quot; &lt;&lt; p.m_Name &lt;&lt; &quot; 年龄：&quot; &lt;&lt; p.m_Age &lt;&lt; endl;
+    &#125;
+    //2.全局函数配合友元做类外实现
+    friend void printPerson2&lt;&gt;(Person&lt;T1, T2&gt;&amp; p);
+    //3.全局函数配合友元做类外实现
+    friend void printPerson3&lt;&gt;(Person&lt;T1, T2&gt;&amp; p);
+
+public:
+    Person(T1 name, T2 age)
+    &#123;
+        this-&gt;m_Name = name;
+        this-&gt;m_Age = age;
+    &#125;
+private:
+    T1 m_Name;
+    T2 m_Age;
+&#125;;
+
+template&lt;class T1, class T2&gt;
+void printPerson2(Person&lt;T1, T2&gt;&amp; p)
+&#123;
+    cout &lt;&lt; &quot;姓名：&quot; &lt;&lt; p.m_Name &lt;&lt; &quot; 年龄：&quot; &lt;&lt; p.m_Age &lt;&lt; endl;
+&#125;
+
+void test01()
+&#123;
+    Person&lt;string, int&gt; p(&quot;aaa&quot;, 10);
+    printPerson2(p);
+&#125;
+</code></pre>
+<h5 id="三、第三天"><a href="#三、第三天" class="headerlink" title="三、第三天"></a>三、第三天</h5><h6 id="3-1-静态类型和动态类型转换"><a href="#3-1-静态类型和动态类型转换" class="headerlink" title="3.1 静态类型和动态类型转换"></a>3.1 静态类型和动态类型转换</h6><p>1.静态类型转换 static_cast</p>
+<p>语法：static_cast&lt;目标类型&gt;(原对象);对于内置数据类型是可以转换的，对于自定义数据类型，必须是父子之间的指针或者引用可以转换成功</p>
+<p>2.动态类型转换 dynamic_cast</p>
+<p>对于内置数据类型不可以转换，对于自定义数据类型：父转子，不安全，转换失败；子转父，安全，转换成功；如果发生多态，那么总是安全的，成功。</p>
+<pre><code class="cpp">//1.静态类型转换
+void test01()
+&#123;
+    //内置数据类型
+    char a = &#39;a&#39;;
+
+    //static_cast&lt;目标类型&gt;(原对象)
+    double d = static_cast&lt;double&gt;(a);
+
+    cout &lt;&lt; d &lt;&lt; endl;
+&#125;
+class Base
+&#123;
+public:
+    virtual void func()
+    &#123;
+        ;
+    &#125;
+&#125;;
+class Son : public Base
+&#123;
+public:
+    void func()
+    &#123;
+        ;
+    &#125;
+&#125;;
+class Other
+&#123;&#125;;
+void test02()
+&#123;
+    //自定义的数据类型
+    Base* base = NULL;
+    Son* son = NULL;
+
+    //将base转为son*类型，向下类型转换，不安全
+    //Son* son2 = static_cast&lt;Son*&gt;(base);
+    //将son转为base*类型，向上类型转换，安全
+    Base* base2 = static_cast&lt;Base*&gt;(son);
+
+    //base转为Other
+    //没有父子关系的两个类型无法转换成功
+    //Other* other = static_cast&lt;Other*&gt;(base);
+&#125;
+//2.动态类型转换
+void test03()
+&#123;
+    //内置数据类型，不允许内置数据类型之间的转换
+    //char c = &#39;c&#39;;
+    //double d = dynamic_cast&lt;double&gt;(c);
+    Base* base = NULL;
+    Son* son = NULL;
+
+    //将base转为son*类型，向下类型转换，不安全
+    //不安全，转换失败
+    //Son* son2 = dynamic_cast&lt;Son*&gt;(base);
+    //将son转为base*类型，向上类型转换，安全
+    Base* base2 = dynamic_cast&lt;Base*&gt;(son);
+
+    //如果发生了多态，父子之间的转换总是安全的
+    Base* base3 = new Son;
+    //将Base3转为Son*
+    Son* son3 = dynamic_cast&lt;Son*&gt;(base3);
+&#125;
+</code></pre>
+<h6 id="3-2-常量转换及重新解释转换"><a href="#3-2-常量转换及重新解释转换" class="headerlink" title="3.2 常量转换及重新解释转换"></a>3.2 常量转换及重新解释转换</h6><p>1.常量类型转换 const_cast</p>
+<p>只能对指针&#x2F;引用使用</p>
+<p>2.重新解释类型转换 reinterpret_cast</p>
+<p>不建议使用，不安全</p>
+<pre><code class="cpp">//3.常量转换
+void test04()
+&#123;
+    //指针之间的转换
+    const int* p = NULL;
+    //将const int*转为int*
+    int* p2 = const_cast&lt;int*&gt; (p);
+    //将int*转为const int*
+    const int* p3 = const_cast&lt;const int*&gt;(p2);
+
+    //引用之间的转换
+    const int a = 10;
+    const int&amp; aRef = a;
+
+    int&amp; aRef2 = const_cast&lt;int&amp;&gt;(aRef);
+
+    //不可以对非指针或非引用做const_cast转换
+    //int b = const_cast&lt;int&gt;(a);
+&#125;
+//4.重新解释转换，最不安全，不建议用
+void test05()
+&#123;
+    int a = 10;
+    int* p = reinterpret_cast&lt;int*&gt;(a);
+    //将base*转为Other*
+    Base* base = NULL;
+    //两个类的成员函数，属性一点都不一样，还是能转换成功
+    Other* other = reinterpret_cast&lt;Other*&gt;(base);
+&#125;
+</code></pre>
+<h6 id="3-3-异常的基本语法"><a href="#3-3-异常的基本语法" class="headerlink" title="3.3 异常的基本语法"></a>3.3 异常的基本语法</h6>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>仓中鼠
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/20223/06/04/%E9%BB%91%E9%A9%ACcpp(%E4%B8%8B)/" title="总结cpp中最基础的操作，以便忘了一看就能记起来。">http://example.com/20223/06/04/黑马cpp(下)/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+      
+      <div>
+        
+          
+        
+      </div>
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%B8%B8%E8%AF%86/" rel="tag"><i class="fa fa-tag"></i> 常识</a>
+              <a href="/tags/C/" rel="tag"><i class="fa fa-tag"></i> C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/20223/06/04/%E9%BB%91%E9%A9%ACcpp(%E4%B8%8A)/" rel="prev" title="总结cpp中最基础的操作，以便忘了一看就能记起来。">
+      <i class="fa fa-chevron-left"></i> 总结cpp中最基础的操作，以便忘了一看就能记起来。
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%BB%91%E9%A9%ACC"><span class="nav-number">1.</span> <span class="nav-text">黑马C++</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%AC%AC%E5%85%AD%E5%A4%A9"><span class="nav-number">1.1.</span> <span class="nav-text">一、第六天</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1-1-%E9%9D%99%E6%80%81%E8%81%94%E7%BC%96%E5%92%8C%E5%8A%A8%E6%80%81%E8%81%94%E7%BC%96"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 静态联编和动态联编</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-2-%E5%A4%9A%E6%80%81%E5%8E%9F%E7%90%86"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 多态原理</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-3-%E5%A4%9A%E6%80%81%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%89%96%E6%9E%90"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.3 多态的深度剖析</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-4-%E5%A4%9A%E6%80%81%E6%A1%88%E4%BE%8B-%E8%AE%A1%E7%AE%97%E5%99%A8"><span class="nav-number">1.1.4.</span> <span class="nav-text">1.4 多态案例-计算器</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-5-%E6%8A%BD%E8%B1%A1%E7%B1%BB%E5%92%8C%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.5.</span> <span class="nav-text">1.5 抽象类和纯虚函数</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-6-%E8%99%9A%E6%9E%90%E6%9E%84%E4%B8%8E%E7%BA%AF%E8%99%9A%E6%9E%90%E6%9E%84"><span class="nav-number">1.1.6.</span> <span class="nav-text">1.6 虚析构与纯虚析构</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-7-%E5%90%91%E4%B8%8A%E5%90%91%E4%B8%8B%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.1.7.</span> <span class="nav-text">1.7 向上向下类型转换</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-8-%E9%87%8D%E8%BD%BD%E9%87%8D%E5%86%99%E9%87%8D%E5%AE%9A%E4%B9%89%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.8.</span> <span class="nav-text">1.8 重载重写重定义概念</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-9-%E7%94%B5%E8%84%91%E7%BB%84%E8%A3%85%E6%A1%88%E4%BE%8B"><span class="nav-number">1.1.9.</span> <span class="nav-text">1.9 电脑组装案例</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%AC%AC%E4%BA%8C%E5%A4%A9"><span class="nav-number">1.2.</span> <span class="nav-text">二、第二天</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-%E5%87%BD%E6%95%B0%E6%A8%A1%E6%9D%BF%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 函数模板基础语法</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-2-%E5%87%BD%E6%95%B0%E6%A8%A1%E6%9D%BF%E6%A1%88%E4%BE%8B%E4%B9%8Bint%E5%92%8Cchar%E7%9A%84%E6%95%B0%E7%BB%84%E6%8E%92%E5%BA%8F"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 函数模板案例之int和char的数组排序</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-3-%E5%87%BD%E6%95%B0%E6%A8%A1%E6%9D%BF%E4%B8%8E%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB%E5%8F%8A%E8%B0%83%E7%94%A8%E8%A7%84%E5%88%99"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 函数模板与普通函数的区别及调用规则</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-4-%E6%A8%A1%E6%9D%BF%E6%9C%BA%E5%88%B6"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 模板机制</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-5-%E6%A8%A1%E6%9D%BF%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7%E4%BB%A5%E5%8F%8A%E8%A7%A3%E5%86%B3"><span class="nav-number">1.2.5.</span> <span class="nav-text">2.5 模板的局限性以及解决</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-6-%E7%B1%BB%E6%A8%A1%E6%9D%BF%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">1.2.6.</span> <span class="nav-text">2.6 类模板的基本语法</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-7-%E7%B1%BB%E6%A8%A1%E6%9D%BF%E4%B8%AD%E7%9A%84%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%E5%88%9B%E5%BB%BA%E6%97%B6%E6%9C%BA"><span class="nav-number">1.2.7.</span> <span class="nav-text">2.7 类模板中的成员函数创建时机</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%EF%BC%9Atypeid-T1-name"><span class="nav-number">1.2.8.</span> <span class="nav-text">扩展：typeid(T1).name()</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-8-%E7%B1%BB%E6%A8%A1%E6%9D%BF%E4%BD%9C%E4%B8%BA%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0"><span class="nav-number">1.2.9.</span> <span class="nav-text">2.8 类模板作为函数参数</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-9-%E7%B1%BB%E6%A8%A1%E6%9D%BF%E7%A2%B0%E5%88%B0%E7%BB%A7%E6%89%BF%E7%9A%84%E9%97%AE%E9%A2%98%E4%BB%A5%E5%8F%8A%E8%A7%A3%E5%86%B3"><span class="nav-number">1.2.10.</span> <span class="nav-text">2.9 类模板碰到继承的问题以及解决</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-10-%E7%B1%BB%E6%A8%A1%E6%9D%BF%E7%9A%84%E7%B1%BB%E5%A4%96%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.2.11.</span> <span class="nav-text">2.10 类模板的类外实现</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-11-%E7%B1%BB%E6%A8%A1%E6%9D%BF%E7%9A%84%E5%88%86%E6%96%87%E4%BB%B6%E7%BC%96%E5%86%99%E9%97%AE%E9%A2%98%E4%BB%A5%E5%8F%8A%E8%A7%A3%E5%86%B3"><span class="nav-number">1.2.12.</span> <span class="nav-text">2.11 类模板的分文件编写问题以及解决</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-12-%E7%B1%BB%E6%A8%A1%E6%9D%BF%E7%A2%B0%E5%88%B0%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.13.</span> <span class="nav-text">2.12 类模板碰到友元函数</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%AC%AC%E4%B8%89%E5%A4%A9"><span class="nav-number">1.3.</span> <span class="nav-text">三、第三天</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#3-1-%E9%9D%99%E6%80%81%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%8A%A8%E6%80%81%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 静态类型和动态类型转换</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-%E5%B8%B8%E9%87%8F%E8%BD%AC%E6%8D%A2%E5%8F%8A%E9%87%8D%E6%96%B0%E8%A7%A3%E9%87%8A%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 常量转换及重新解释转换</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-3-%E5%BC%82%E5%B8%B8%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 异常的基本语法</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="仓中鼠"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">仓中鼠</p>
+  <div class="site-description" itemprop="description">仓中鼠，食积粟，居大庑之下，不见人犬之忧。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/pd0820" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;pd0820" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2840156124@qq.com" title="E-Mail → mailto:2840156124@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">仓中鼠</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">24k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22 分钟</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+
